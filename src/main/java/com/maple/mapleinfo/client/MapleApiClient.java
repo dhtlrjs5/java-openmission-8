@@ -1,5 +1,6 @@
 package com.maple.mapleinfo.client;
 
+import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,10 +31,10 @@ public class MapleApiClient {
         return headers;
     }
 
-    public String getCharacterIdByName(String nickname) {
+    public String getCharacterIdByName(String name) {
         String url = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/id")
-                .queryParam("character_name", nickname)
+                .queryParam("character_name", name)
                 .build()
                 .toUriString();
 
@@ -49,7 +50,7 @@ public class MapleApiClient {
         return response.getBody();
     }
 
-    public String getCharacterBasicInfo(String ocid) {
+    public CharacterBasicInfoDto getCharacterBasicInfo(String ocid) {
         String url = UriComponentsBuilder.fromUriString(baseUrl)
                 .path("/character/basic")
                 .queryParam("ocid", ocid)
@@ -58,11 +59,11 @@ public class MapleApiClient {
 
         HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
 
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<CharacterBasicInfoDto> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 entity,
-                String.class
+                CharacterBasicInfoDto.class
         );
 
         return response.getBody();

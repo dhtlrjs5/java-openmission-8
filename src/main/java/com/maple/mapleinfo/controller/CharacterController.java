@@ -1,5 +1,6 @@
 package com.maple.mapleinfo.controller;
 
+import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
 import com.maple.mapleinfo.service.CharacterService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ public class CharacterController {
     }
 
     @GetMapping("/id")
-    public String getCharacter(@RequestParam String name) {
+    public CharacterBasicInfoDto getCharacter(@RequestParam String name) {
         return characterService.getCharacterBasicInfo(name);
     }
 }

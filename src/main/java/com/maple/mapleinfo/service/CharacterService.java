@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.client.MapleApiClient;
+import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,8 +18,7 @@ public class CharacterService {
         this.objectMapper = objectMapper;
     }
 
-    // 테스트용 임시 추출 로직
-    public String getCharacterBasicInfo(String nickname) {
+    public CharacterBasicInfoDto getCharacterBasicInfo(String nickname) {
         String ocidJson = mapleApiClient.getCharacterIdByName(nickname);
         String ocid;
 
