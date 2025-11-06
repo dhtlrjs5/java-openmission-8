@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${info.name} + ' 정보'"></title>
+</head>
+<body>
+<p>이름: <span th:text="${info.name}"></span></p>
+<p>서버: <span th:text="${info.world}"></span></p>
+<p>길드: <span th:text="${info.guild}"></span></p>
+<p>직업: <span th:text="${info.job}"></span></p>
+<p>레벨: <span th:text="${info.level}"></span></p>
+<p>경험치: <span th:text="${info.expRate}"></span>%</p>
+
+<a href="/">돌아가기</a>
+</body>
+</html>

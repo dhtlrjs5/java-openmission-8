@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.client.MapleApiClient;
 import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CharacterService {
 
     private final MapleApiClient mapleApiClient;

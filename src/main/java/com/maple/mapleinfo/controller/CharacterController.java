@@ -2,12 +2,13 @@ package com.maple.mapleinfo.controller;
 
 import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
 import com.maple.mapleinfo.service.CharacterService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 @RequestMapping("/maplestory/v1")
 public class CharacterController {
 
@@ -17,13 +18,10 @@ public class CharacterController {
         this.characterService = characterService;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-
     @GetMapping("/id")
-    public CharacterBasicInfoDto getCharacter(@RequestParam String name) {
-        return characterService.getCharacterBasicInfo(name);
+    public String getCharacter(@RequestParam String name, Model model) {
+        CharacterBasicInfoDto info = characterService.getCharacterBasicInfo(name);
+        model.addAttribute("info", info);
+        return "characterBasicInfo";
     }
 }
