@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메이플 서비스</title>
+</head>
+<body>
+<h1>메이플 캐릭터 정보 검색</h1>
+<form action="/maplestory/v1/id" method="get">
+    <label for="name">캐릭터 이름</label>
+    <input type="text" id="name" name="name" required>
+    <button type="submit">검색</button>
+</form>
+</body>
+</html>

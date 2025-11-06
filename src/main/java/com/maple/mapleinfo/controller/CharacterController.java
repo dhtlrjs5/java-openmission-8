@@ -17,6 +17,11 @@ public class CharacterController {
         this.characterService = characterService;
     }
 
+    @GetMapping("/")
+    public String index() {
+        return "index";
+    }
+
     @GetMapping("/id")
     public CharacterBasicInfoDto getCharacter(@RequestParam String name) {
         return characterService.getCharacterBasicInfo(name);
