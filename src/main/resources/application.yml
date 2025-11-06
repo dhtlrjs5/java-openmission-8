@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: maple-api
+nexon:
+  api:
+    key: ${NEXON_API_KEY}
+    base-url: "https://open.api.nexon.com/maplestory/v1"

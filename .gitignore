@@ -35,3 +35,28 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 환경 변수 / 보안 ###
+.env
+*.env
+application-*.yml
+application-*.properties
+
+### 로컬 설정 ###
+/logs/
+/tmp/
+/.gradle/
+/build/
+/out/
+
+### 운영 중 불필요 ###
+*.log
+*.jar
+*.war
+*.zip
+*.tar
+*.gz
+
+### OS 별 불필요 파일 ###
+.DS_Store
+Thumbs.db
