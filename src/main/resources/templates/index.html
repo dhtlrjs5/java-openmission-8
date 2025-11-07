@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>메이플 서비스</title>
@@ -99,15 +99,18 @@
 <main>
     <div class="search-box">
         <form th:action="@{/maplestory/v1/id}" method="get">
-            <input type="text" name="name" placeholder="닉네임을 입력하세요" required>
-            <button type="submit">검색</button>
+            <h1>캐릭터 정보 조회</h1>
+            <label>
+                <input type="text" name="name" placeholder="닉네임을 입력하세요" required>
+                <button type="submit">검색</button>
+            </label>
         </form>
     </div>
 
     <div class="simulation-container">
-        <div class="simulation-box" th:onclick="|location.href='@{/simulation1}'|">큐브 시뮬레이터</div>
-        <div class="simulation-box" th:onclick="|location.href='@{/simulation2}'|">강화 시뮬레이터</div>
-        <div class="simulation-box" th:onclick="|location.href='@{/simulation3}'|">로얄 시뮬레이터</div>
+        <div class="simulation-box" th:href="|location.href='@{/simulation1}'|">큐브 시뮬레이터</div>
+        <div class="simulation-box" th:href="|location.href='@{/simulation2}'|">강화 시뮬레이터</div>
+        <div class="simulation-box" th:href="|location.href='@{/simulation3}'|">로얄 시뮬레이터</div>
     </div>
 </main>
 
