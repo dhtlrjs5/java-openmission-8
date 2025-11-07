@@ -1,6 +1,14 @@
 spring:
   application:
     name: maple-api
+  spring:
+    devtools:
+      # 1. 자동 재시작 기능 비활성화 (Automatic Restart)
+      restart:
+        enabled: false
+      # 2. Live Reload 서버 기능 비활성화 (브라우저 자동 새로고침)
+      livereload:
+        enabled: false
 nexon:
   api:
     key: ${NEXON_API_KEY}

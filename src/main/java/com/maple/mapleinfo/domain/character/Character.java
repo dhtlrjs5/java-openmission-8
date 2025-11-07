@@ -1,6 +1,5 @@
-package com.maple.mapleinfo.domain;
+package com.maple.mapleinfo.domain.character;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
