@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.client.MapleApiClient;
 import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
+import com.maple.mapleinfo.exception.CharacterNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,13 @@ public class CharacterService {
             ocid = null;
         }
 
-        return mapleApiClient.getCharacterBasicInfo(ocid);
+        CharacterBasicInfoDto info = mapleApiClient.getCharacterBasicInfo(ocid);
+
+        if (ocid == null || ocid.isEmpty() || info == null) {
+            throw new CharacterNotFoundException("캐릭터의 정보를 불러올 수 없습니다.");
+        }
+
+        return info;
     }
 }
 
