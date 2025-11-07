@@ -10,21 +10,51 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main>
-    <p>등급: <span th:text="${grade}">RARE</span></p>
-
-    <table>
-        <tr>
-            <th>옵션 이름</th>
-        </tr>
-        <tr th:each="opt : ${options}">
-            <td th:text="${opt.name}"></td>
-        </tr>
+    <!-- 기본 큐브 -->
+    <p>기본 큐브 등급: <span id="grade">RARE</span></p>
+    <table id="default-table">
+        <tr><th>옵션 이름</th></tr>
     </table>
+    <button id="default-btn">큐브 사용</button>
 
-    <form th:action="@{/cube/use}" method="get">
-        <button type="submit">큐브 사용</button>
-    </form>
+    <hr/>
+
+    <!-- 에디셔널 큐브 -->
+    <p>에디셔널 큐브 등급: <span id="additional-grade">RARE</span></p>
+    <table id="additional-table">
+        <tr><th>옵션 이름</th></tr>
+    </table>
+    <button id="additional-btn">에디셔널 큐브 사용</button>
 </main>
+
+<script>
+    async function rollCube(url, tableId, gradeId) {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        // 등급 업데이트
+        document.getElementById(gradeId).textContent = data.grade;
+
+        // 옵션 테이블 초기화
+        const table = document.getElementById(tableId);
+        table.innerHTML = '<tr><th>옵션 이름</th></tr>';
+
+        // 옵션 추가
+        data.options.forEach(opt => {
+            const row = table.insertRow();
+            const cell = row.insertCell();
+            cell.textContent = opt.name;
+        });
+    }
+
+    document.getElementById('default-btn').addEventListener('click', () => {
+        rollCube('/cube/use/json', 'default-table', 'grade');
+    });
+
+    document.getElementById('additional-btn').addEventListener('click', () => {
+        rollCube('/cube/use/additional/json', 'additional-table', 'additional-grade');
+    });
+</script>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 
