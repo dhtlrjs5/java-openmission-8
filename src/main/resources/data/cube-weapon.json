@@ -1,5 +1,10 @@
 {
   "cube": {
+    "upgrade": {
+      "RARE": 15.0,
+      "EPIC": 3.5,
+      "UNIQUE": 1.4
+    },
     "weapon": {
       "RARE": {
         "first": [

@@ -11,8 +11,11 @@ public class MapleinfoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MapleinfoApplication.class, args);
 		CubeService cubeService = new CubeService();
-		for (int i = 0; i < 100; i++) {
-			cubeService.useCube(Grade.EPIC);
+		for (int i = 0; i < 3; i++) {
+			//cubeService.useCube(Grade.RARE);
+			//cubeService.useCube(Grade.EPIC);
+			cubeService.useCube(Grade.UNIQUE);
+			//cubeService.useCube(Grade.LEGENDARY);
 		}
 	}
 

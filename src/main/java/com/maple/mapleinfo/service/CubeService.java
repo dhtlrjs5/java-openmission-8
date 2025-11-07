@@ -3,6 +3,7 @@ package com.maple.mapleinfo.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.domain.cube.Option;
+import com.maple.mapleinfo.domain.cube.Potential;
 import com.maple.mapleinfo.utils.Grade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Random;
 public class CubeService {
 
     private static final String RESOURCE_PATH = "/data/cube-weapon.json";
+
     private final ObjectMapper mapper = new ObjectMapper();
     private final JsonNode root;
     private final Random random = new Random();
@@ -25,7 +27,7 @@ public class CubeService {
     public CubeService() {
         try (InputStream inputStream = getClass().getResourceAsStream(RESOURCE_PATH)) {
             if (inputStream == null) {
-                throw new FileNotFoundException(RESOURCE_PATH);
+                throw new FileNotFoundException(RESOURCE_PATH + " not found");
             }
             root = mapper.readTree(inputStream);
         } catch (Exception e) {
@@ -33,11 +35,43 @@ public class CubeService {
         }
     }
 
-    public List<Option> useCube(Grade grade) {
+    public Potential useCube(Grade grade) {
 
         List<Option> options = new ArrayList<>();
 
-        JsonNode gradeNode = loadGradeNode(grade);
+        JsonNode cube = root.path("cube");
+        rollOption(grade, options, cube);
+        grade = upgrade(grade, cube);
+
+        System.out.println(grade);
+
+        return new Potential(grade, options);
+    }
+
+    private Grade upgrade(Grade grade, JsonNode cube) {
+
+        if (grade.equals(Grade.LEGENDARY)) {
+            return grade;
+        }
+
+        JsonNode upgrade = cube.path("upgrade");
+        JsonNode probability = upgrade.path(grade.name());
+
+        if (probability.isMissingNode() || probability.isNull()) {
+            return grade;
+        }
+
+        double randomValue = random.nextDouble() * 100.0;
+
+        if (randomValue <= probability.asDouble()) {
+            grade = grade.next();
+        }
+
+        return grade;
+    }
+
+    private void rollOption(Grade grade, List<Option> options, JsonNode cube) {
+        JsonNode gradeNode = loadGradeNode(grade, cube);
         if (gradeNode == null) {
             throw new IllegalArgumentException("grade 오류");
         }
@@ -53,17 +87,15 @@ public class CubeService {
         options.add(first);
         options.add(second);
         options.add(third);
-
-        return options;
     }
 
-    private JsonNode loadGradeNode(Grade grade) {
+    private JsonNode loadGradeNode(Grade grade, JsonNode cube) {
 
         if (grade == null) {
             return null;
         }
 
-        JsonNode weaponNode = root.path("cube").path("weapon");
+        JsonNode weaponNode = cube.path("weapon");
 
         JsonNode gradeNode = weaponNode.path(grade.name());
 
