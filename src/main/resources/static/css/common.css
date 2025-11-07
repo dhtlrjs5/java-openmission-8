@@ -195,3 +195,35 @@ footer small {
     font-weight: 600;
     color: #4CAF50; /* 기존 버튼 색상과 통일 */
 }
+
+.option-box.rare { background-color: #e0f7fa; }       /* 연한 파랑 */
+.option-box.epic { background-color: #ffe0b2; }       /* 연한 오렌지 */
+.option-box.unique { background-color: #d1c4e9; }     /* 연보라 */
+.option-box.legendary { background-color: #ffd54f; }  /* 금색 */
+
+/* 큐브 옵션 테이블 중앙 정렬 */
+main table {
+    margin: 40px auto; /* 상하 40px 여백, 좌우 자동 중앙 */
+    border-collapse: collapse;
+    width: 30%; /* 테이블 너비 조정 */
+    text-align: center; /* 텍스트 중앙 정렬 */
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+main table th, main table td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+main table th {
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+}
+
+main table tr:last-child td {
+    border-bottom: none;
+}

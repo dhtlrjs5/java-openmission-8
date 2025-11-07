@@ -2,9 +2,11 @@ package com.maple.mapleinfo.domain.cube;
 
 import com.maple.mapleinfo.utils.Grade;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 @AllArgsConstructor
 public class Potential {
 
