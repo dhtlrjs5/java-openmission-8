@@ -3,81 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>캐릭터 정보</title>
-    <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 420px;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .image-wrapper {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #e1e1e1;
-            margin: 0 auto 20px auto;
-        }
-
-        .character-img {
-            width: 400px; /* 내부 이미지만 더 키우기 */
-            height: 400px;
-            object-fit: cover; /* 비율 유지하며 채우기 */
-            transform: translate(-26%, -31%); /* 위치 미세조정 가능 */
-        }
-
-        .character-name {
-            font-size: 26px;
-            font-weight: 700;
-            color: #2f3640;
-            margin-bottom: 5px;
-        }
-
-        .character-sub {
-            color: #718093;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        .character-info {
-            font-size: 18px;
-            color: #353b48;
-            line-height: 1.6;
-        }
-
-        .character-info span {
-            font-weight: 600;
-            color: #273c75;
-        }
-
-        .back-btn {
-            margin-top: 25px;
-            display: inline-block;
-            text-decoration: none;
-            color: white;
-            background: #273c75;
-            padding: 10px 25px;
-            border-radius: 25px;
-        }
-
-        .back-btn:hover {
-            background: #40739e;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
 <div class="card">
     <div class="image-wrapper">
         <img th:src="${info.image}" alt="캐릭터 이미지" class="character-img">
@@ -95,8 +26,11 @@
         <span th:text="' | Lv. ' + ${info.level}">Lv.300</span>
         <span th:if="${info.expRate != null}" th:text="' (' + ${info.expRate} + '%)'">(75%)</span>
     </div>
-
+    <br/>
     <a href="/" class="back-btn">돌아가기</a>
 </div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>

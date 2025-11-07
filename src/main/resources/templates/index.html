@@ -1,100 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>메이플 서비스</title>
-    <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #fafafa;
-        }
-
-        header {
-            border-bottom: 1px solid #ccc;
-            padding: 15px 30px;
-            background-color: white;
-        }
-
-        header a {
-            text-decoration: none;
-            color: #222;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        main {
-            text-align: center;
-            margin-top: 100px;
-        }
-
-        .search-box input {
-            width: 250px;
-            padding: 10px;
-            border: 1px solid #aaa;
-            border-radius: 8px;
-        }
-
-        .search-box button {
-            padding: 10px 16px;
-            margin-left: 8px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .search-box button:hover {
-            background-color: #45a049;
-        }
-
-        .simulation-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 80px;
-            gap: 40px;
-        }
-
-        .simulation-box {
-            width: 200px;
-            height: 120px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
-
-        .simulation-box:hover {
-            transform: scale(1.05);
-            cursor: pointer;
-        }
-
-        footer {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 120px;
-            padding: 20px;
-        }
-
-        footer small {
-            display: block;
-            font-size: 0.75rem;
-            color: #aaa;
-            margin-top: 5px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
 </head>
 <body>
-<header>
-    <a th:href="@{/}">메이플 서비스</a>
-</header>
+
+<div th:replace="~{fragments/header :: header}"></div>
 
 <main>
     <div class="search-box">
@@ -108,15 +21,13 @@
     </div>
 
     <div class="simulation-container">
-        <div class="simulation-box" th:href="|location.href='@{/simulation1}'|">큐브 시뮬레이터</div>
-        <div class="simulation-box" th:href="|location.href='@{/simulation2}'|">강화 시뮬레이터</div>
-        <div class="simulation-box" th:href="|location.href='@{/simulation3}'|">로얄 시뮬레이터</div>
+        <div class="simulation-box" th:onclick="|location.href='@{/simulation1}'|">큐브 시뮬레이터</div>
+        <div class="simulation-box" th:onclick="|location.href='@{/simulation2}'|">강화 시뮬레이터</div>
+        <div class="simulation-box" th:onclick="|location.href='@{/simulation3}'|">로얄 시뮬레이터</div>
     </div>
 </main>
 
-<footer>
-    우테코 오픈 미션
-    <small>본 서비스는 Nexon Open API를 기반으로 제작되었습니다.</small>
-</footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>

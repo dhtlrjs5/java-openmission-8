@@ -1,0 +1,197 @@
+/* --- 기존 코드 유지 --- */
+body {
+    font-family: 'Pretendard', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #fafafa;
+}
+
+/* Header */
+header {
+    border-bottom: 1px solid #ccc;
+    padding: 15px 30px;
+    background-color: white;
+}
+
+header a {
+    text-decoration: none;
+    color: #222;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Main */
+main {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.search-box input {
+    width: 250px;
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+}
+
+.search-box button {
+    padding: 10px 16px;
+    margin-left: 8px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    background-color: #45a049;
+}
+
+/* Simulation boxes */
+.simulation-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+    gap: 40px;
+}
+
+.simulation-box {
+    width: 200px;
+    height: 120px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.simulation-box:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 120px;
+    padding: 20px;
+    border-top: 1px solid #ccc;
+}
+
+footer small {
+    display: block;
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    color: white;
+    background-color: #4CAF50;
+    margin: 0 8px;
+    transition: background-color 0.2s;
+}
+
+.btn:hover {
+    background-color: #43a047;
+}
+
+.back-btn {
+    display: inline-block;
+    text-decoration: none;
+    color: white !important;
+    background-color: #aaa;
+    padding: 10px 25px;
+    border-radius: 25px;
+    transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+    background-color: #888;
+}
+
+
+/* 에러 페이지용 */
+.error-container {
+    text-align: center;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 40px;
+    width: 380px;
+    margin: 120px auto;
+}
+
+.error-container h1 {
+    color: #e74c3c;
+    font-size: 22px;
+    margin-bottom: 16px;
+}
+
+.error-container p {
+    color: #555;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+/* ============================= */
+/* ✅ 캐릭터 상세 페이지용 스타일 */
+/* ============================= */
+.card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 420px;
+    text-align: center;
+    padding: 30px;
+    margin: 100px auto;
+}
+
+.image-wrapper {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #e1e1e1;
+    margin: 0 auto 20px auto;
+}
+
+.character-img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+    transform: translate(-26%, -31%);
+}
+
+.character-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #2f3640;
+    margin-bottom: 5px;
+}
+
+.character-sub {
+    color: #718093;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.character-info {
+    font-size: 18px;
+    color: #353b48;
+    line-height: 1.6;
+}
+
+.character-info span {
+    font-weight: 600;
+    color: #4CAF50; /* 기존 버튼 색상과 통일 */
+}
