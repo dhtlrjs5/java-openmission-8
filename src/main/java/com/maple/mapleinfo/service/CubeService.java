@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.domain.cube.Option;
 import com.maple.mapleinfo.domain.cube.Potential;
+import com.maple.mapleinfo.utils.CubeType;
 import com.maple.mapleinfo.utils.Grade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,32 +19,47 @@ import java.util.Random;
 @Service
 public class CubeService {
 
-    private static final String RESOURCE_PATH = "/data/cube-weapon.json";
+    private static final String DEFAULT_PATH = "/data/cube-weapon.json";
+    private static final String ADDITIONAL_PATH = "/data/additional-cube-weapon.json";
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final JsonNode root;
+    private final JsonNode defaultRoot;
+    private final JsonNode additionalRoot;
     private final Random random = new Random();
 
     public CubeService() {
-        try (InputStream inputStream = getClass().getResourceAsStream(RESOURCE_PATH)) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        try (InputStream inputStream = getClass().getResourceAsStream(DEFAULT_PATH)) {
             if (inputStream == null) {
-                throw new FileNotFoundException(RESOURCE_PATH + " not found");
+                throw new FileNotFoundException(DEFAULT_PATH + " not found");
             }
-            root = mapper.readTree(inputStream);
+            defaultRoot = mapper.readTree(inputStream);
         } catch (Exception e) {
             throw new IllegalStateException("cube-weapon.json 로드 실패", e);
         }
+
+        try (InputStream inputStream = getClass().getResourceAsStream(ADDITIONAL_PATH)) {
+            if (inputStream == null) {
+                throw new FileNotFoundException(ADDITIONAL_PATH + " not found");
+            }
+            additionalRoot = mapper.readTree(inputStream);
+        } catch (Exception e) {
+            throw new IllegalStateException("additional-cube-weapon.json 로드 실패", e);
+        }
     }
 
-    public Potential useCube(Grade grade) {
+    public Potential useCube(Grade grade, CubeType type) {
 
         List<Option> options = new ArrayList<>();
 
-        JsonNode cube = root.path("cube");
+        JsonNode cube = defaultRoot.path("cube");
+
+        if (type.equals(CubeType.ADDITIONAL)) {
+            cube = additionalRoot.path("cube");
+        }
+
         rollOption(grade, options, cube);
         grade = upgrade(grade, cube);
-
-        System.out.println(grade);
 
         return new Potential(grade, options);
     }
