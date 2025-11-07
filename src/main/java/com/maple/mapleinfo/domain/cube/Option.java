@@ -1,7 +1,9 @@
 package com.maple.mapleinfo.domain.cube;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public class Option {
 
