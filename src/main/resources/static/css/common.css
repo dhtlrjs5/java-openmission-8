@@ -119,7 +119,6 @@ footer small {
     background-color: #888;
 }
 
-
 /* 에러 페이지용 */
 .error-container {
     text-align: center;
@@ -205,8 +204,8 @@ footer small {
 main table {
     margin: 40px auto; /* 상하 40px 여백, 좌우 자동 중앙 */
     border-collapse: collapse;
-    width: 30%; /* 테이블 너비 조정 */
-    text-align: center; /* 텍스트 중앙 정렬 */
+    width: 30%;
+    text-align: center;
     background-color: white;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     border-radius: 12px;
@@ -226,4 +225,51 @@ main table th {
 
 main table tr:last-child td {
     border-bottom: none;
+}
+
+/* ============================= */
+/* ✅ 큐브 시뮬레이션 버튼 스타일 */
+/* ============================= */
+.cube-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    color: white;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.2s;
+}
+
+/* 기본 큐브 버튼 */
+#default-btn {
+    background-color: #6bb6ff; /* 연파랑 */
+}
+
+#default-btn:hover {
+    background-color: #4d9efc; /* hover 시 진한 파랑 */
+}
+
+/* 에디셔널 큐브 버튼 */
+#additional-btn {
+    background-color: #75d79e; /* 연초록 */
+}
+
+#additional-btn:hover {
+    background-color: #52c57f; /* hover 시 진한 초록 */
+}
+
+/* 초기화 버튼 */
+#reset-btn {
+    background-color: #ff6b6b; /* 빨강 */
+}
+
+#reset-btn:hover {
+    background-color: #e64b4b; /* hover 시 진한 빨강 */
+}
+
+/* 버튼 정렬용 */
+.cube-btn-group {
+    text-align: center;
+    margin-top: 5px;
 }

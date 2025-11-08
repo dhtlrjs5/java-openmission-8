@@ -28,9 +28,14 @@
         <tr><td>-</td></tr>
     </table>
 
-    <button id="default-btn">큐브 사용</button>
-    &nbsp;
-    <button id="additional-btn">에디셔널 큐브 사용</button>
+    <div class="cube-btn-group">
+        <button id="default-btn" class="cube-btn">잠재능력 재설정</button>
+        &nbsp;&nbsp;&nbsp;
+        <button id="additional-btn" class="cube-btn">에디셔널 재설정</button>
+    </div>
+    <div class="cube-btn-group">
+        <button id="reset-btn" class="cube-btn">초기화</button>
+    </div>
 </main>
 
 <script>
@@ -64,6 +69,30 @@
     document.getElementById('additional-btn').addEventListener('click', () => {
         rollCube('/cube/use/additional', 'additional-table', 'additional-grade');
     });
+
+    document.getElementById('reset-btn').addEventListener('click', async () => {
+        const res = await fetch('/cube/reset');
+        const data = await res.json();
+
+        // 등급 초기화
+        document.getElementById('grade').textContent = data.grade;
+        document.getElementById('additional-grade').textContent = data.grade;
+
+        // 테이블 초기화
+        ['default-table', 'additional-table'].forEach(id => {
+            const table = document.getElementById(id);
+            table.innerHTML = id === 'default-table'
+                ? '<tr><th>잠재옵션</th></tr>'
+                : '<tr><th>에디셔널 잠재옵션</th></tr>';
+
+            for (let i = 0; i < 3; i++) {
+                const row = table.insertRow();
+                const cell = row.insertCell();
+                cell.textContent = '-';
+            }
+        });
+    });
+
 </script>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

@@ -162,4 +162,8 @@ public class CubeService {
                 fallback.path("probability").asText("0%") + "%"
         );
     }
+
+    public Potential reset() {
+        return new Potential(Grade.RARE, new ArrayList<>());
+    }
 }

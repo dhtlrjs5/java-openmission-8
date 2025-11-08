@@ -36,7 +36,7 @@ public class CubeController {
 
     @GetMapping("/cube/use")
     @ResponseBody
-    public Potential useDefaultCubeJson(HttpSession session) {
+    public Potential useDefaultCube(HttpSession session) {
         Grade currentGrade = (Grade) session.getAttribute("grade");
         if (currentGrade == null) currentGrade = Grade.RARE;
 
@@ -48,7 +48,7 @@ public class CubeController {
 
     @GetMapping("/cube/use/additional")
     @ResponseBody
-    public Potential useAdditionalCubeJson(HttpSession session) {
+    public Potential useAdditionalCube(HttpSession session) {
         Grade currentGrade = (Grade) session.getAttribute("additionalGrade");
         if (currentGrade == null) currentGrade = Grade.RARE;
 
@@ -58,5 +58,12 @@ public class CubeController {
         return potential;
     }
 
+    @GetMapping("/cube/reset")
+    @ResponseBody
+    public Potential resetCube(HttpSession session) {
+        session.setAttribute("grade", Grade.RARE);
+        session.setAttribute("additionalGrade", Grade.RARE );
 
+        return cubeService.reset();
+    }
 }
