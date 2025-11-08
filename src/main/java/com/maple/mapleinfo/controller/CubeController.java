@@ -34,7 +34,7 @@ public class CubeController {
         return "cube";
     }
 
-    @GetMapping("/cube/use/json")
+    @GetMapping("/cube/use")
     @ResponseBody
     public Potential useDefaultCubeJson(HttpSession session) {
         Grade currentGrade = (Grade) session.getAttribute("grade");
@@ -46,7 +46,7 @@ public class CubeController {
         return potential;
     }
 
-    @GetMapping("/cube/use/additional/json")
+    @GetMapping("/cube/use/additional")
     @ResponseBody
     public Potential useAdditionalCubeJson(HttpSession session) {
         Grade currentGrade = (Grade) session.getAttribute("additionalGrade");

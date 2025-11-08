@@ -58,8 +58,8 @@ public class CubeService {
             cube = additionalRoot.path("cube");
         }
 
-        rollOption(grade, options, cube);
         grade = upgrade(grade, cube);
+        rollOption(grade, options, cube);
 
         return new Potential(grade, options);
     }
