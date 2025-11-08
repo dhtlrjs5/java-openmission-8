@@ -13,17 +13,23 @@
     <!-- 기본 큐브 -->
     <p>기본 큐브 등급: <span id="grade">RARE</span></p>
     <table id="default-table">
-        <tr><th>옵션 이름</th></tr>
+        <tr><th>잠재옵션</th></tr>
+        <tr><td>-</td></tr>
+        <tr><td>-</td></tr>
+        <tr><td>-</td></tr>
     </table>
-    <button id="default-btn">큐브 사용</button>
-
-    <hr/>
 
     <!-- 에디셔널 큐브 -->
     <p>에디셔널 큐브 등급: <span id="additional-grade">RARE</span></p>
     <table id="additional-table">
-        <tr><th>옵션 이름</th></tr>
+        <tr><th>에디셔널 잠재옵션</th></tr>
+        <tr><td>-</td></tr>
+        <tr><td>-</td></tr>
+        <tr><td>-</td></tr>
     </table>
+
+    <button id="default-btn">큐브 사용</button>
+    &nbsp;
     <button id="additional-btn">에디셔널 큐브 사용</button>
 </main>
 
@@ -37,7 +43,11 @@
 
         // 옵션 테이블 초기화
         const table = document.getElementById(tableId);
-        table.innerHTML = '<tr><th>옵션 이름</th></tr>';
+        if (tableId === 'default-table') {
+            table.innerHTML = '<tr><th>잠재옵션</th></tr>';
+        } else if (tableId === 'additional-table') {
+            table.innerHTML = '<tr><th>에디셔널 잠재옵션</th></tr>';
+        }
 
         // 옵션 추가
         data.options.forEach(opt => {
