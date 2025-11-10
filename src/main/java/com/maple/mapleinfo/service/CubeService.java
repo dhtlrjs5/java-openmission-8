@@ -19,6 +19,13 @@ import java.util.Random;
 @Service
 public class CubeService {
 
+    private static final int RARE_TO_EPIC_DEFAULT_LIMIT = 10;
+    private static final int EPIC_TO_UNIQUE_DEFAULT_LIMIT = 42;
+    private static final int UNIQUE_TO_LEGENDARY_DEFAULT_LIMIT = 107;
+    private static final int RARE_TO_EPIC_ADDITIONAL_LIMIT = 31;
+    private static final int EPIC_TO_UNIQUE_ADDITIONAL_LIMIT = 76;
+    private static final int UNIQUE_TO_LEGENDARY_ADDITIONAL_LIMIT = 214;
+
     private static final String DEFAULT_PATH = "/data/cube-weapon.json";
     private static final String ADDITIONAL_PATH = "/data/additional-cube-weapon.json";
 
@@ -48,7 +55,7 @@ public class CubeService {
         }
     }
 
-    public Potential useCube(Grade grade, CubeType type) {
+    public Potential useCube(Grade grade, CubeType type, Integer count) {
 
         List<Option> options = new ArrayList<>();
 
@@ -58,10 +65,35 @@ public class CubeService {
             cube = additionalRoot.path("cube");
         }
 
-        grade = upgrade(grade, cube);
-        rollOption(grade, options, cube);
+        Potential initPotential = new Potential(grade, options, count, type);
+        return rollCube(initPotential, cube);
+    }
 
-        return new Potential(grade, options);
+    private Potential rollCube(Potential potential, JsonNode cube) {
+        Grade grade = potential.getGrade();
+        List<Option> options = potential.getOptions();
+        Integer count = potential.getCount();
+        CubeType type = potential.getType();
+
+        Grade newGrade = applyDefaultLimitSystem(grade, count);
+
+        if (type.equals(CubeType.ADDITIONAL)) {
+            newGrade = applyAdditionalLimitSystem(grade, count);
+        }
+
+        if (newGrade != grade) {
+            rollOption(newGrade, options, cube);
+            return new Potential(newGrade, options, 0, type);
+        }
+
+        newGrade = upgrade(grade, cube);
+        if (newGrade != grade) {
+            rollOption(newGrade, options, cube);
+            return new Potential(newGrade, options, 0, type);
+        }
+
+        rollOption(newGrade, options, cube);
+        return new Potential(grade, options, count + 1, type);
     }
 
     private Grade upgrade(Grade grade, JsonNode cube) {
@@ -83,6 +115,36 @@ public class CubeService {
             grade = grade.next();
         }
 
+        return grade;
+    }
+
+    private Grade applyDefaultLimitSystem(Grade grade, int count) {
+        switch (grade) {
+            case RARE:
+                if (count >= RARE_TO_EPIC_DEFAULT_LIMIT) return Grade.EPIC;
+                break;
+            case EPIC:
+                if (count >= EPIC_TO_UNIQUE_DEFAULT_LIMIT) return Grade.UNIQUE;
+                break;
+            case UNIQUE:
+                if (count >= UNIQUE_TO_LEGENDARY_DEFAULT_LIMIT) return Grade.LEGENDARY;
+                break;
+        }
+        return grade;
+    }
+
+    private Grade applyAdditionalLimitSystem(Grade grade, int count) {
+        switch (grade) {
+            case RARE:
+                if (count >= RARE_TO_EPIC_ADDITIONAL_LIMIT) return Grade.EPIC;
+                break;
+            case EPIC:
+                if (count >= EPIC_TO_UNIQUE_ADDITIONAL_LIMIT) return Grade.UNIQUE;
+                break;
+            case UNIQUE:
+                if (count >= UNIQUE_TO_LEGENDARY_ADDITIONAL_LIMIT) return Grade.LEGENDARY;
+                break;
+        }
         return grade;
     }
 
@@ -164,6 +226,6 @@ public class CubeService {
     }
 
     public Potential reset() {
-        return new Potential(Grade.RARE, new ArrayList<>());
+        return new Potential(Grade.RARE, new ArrayList<>(), 0, CubeType.NORMAL);
     }
 }
