@@ -11,7 +11,10 @@
 
 <main>
     <!-- 기본 큐브 -->
-    <p>기본 큐브 등급: <span id="grade">RARE</span></p>
+    <p>
+        기본 큐브 등급: <span id="grade">RARE</span>
+        <span id="default-count" style="color: #555; font-size: 0.9rem;">(0 / 10)</span>
+    </p>
     <table id="default-table">
         <tr><th>잠재옵션</th></tr>
         <tr><td>-</td></tr>
@@ -20,7 +23,10 @@
     </table>
 
     <!-- 에디셔널 큐브 -->
-    <p>에디셔널 큐브 등급: <span id="additional-grade">RARE</span></p>
+    <p>
+        에디셔널 큐브 등급: <span id="additional-grade">RARE</span>
+        <span id="additional-count" style="color: #555; font-size: 0.9rem;">(0 / 31)</span>
+    </p>
     <table id="additional-table">
         <tr><th>에디셔널 잠재옵션</th></tr>
         <tr><td>-</td></tr>
@@ -39,20 +45,37 @@
 </main>
 
 <script>
-    async function rollCube(url, tableId, gradeId) {
+    const limitMap = {
+        DEFAULT_RARE: 10,
+        DEFAULT_EPIC: 42,
+        DEFAULT_UNIQUE: 102,
+        ADDITIONAL_RARE: 31,
+        ADDITIONAL_EPIC: 76,
+        ADDITIONAL_UNIQUE: 214,
+        LEGENDARY: 0
+    };
+
+    async function rollCube(url, tableId, gradeId, countId) {
         const res = await fetch(url);
         const data = await res.json();
 
         // 등급 업데이트
         document.getElementById(gradeId).textContent = data.grade;
 
+        // limitMap 키 조합: 기본/에디셔널 + 등급
+        const typePrefix = data.type === 'ADDITIONAL' ? 'ADDITIONAL_' : 'DEFAULT_';
+        const limitKey = typePrefix + data.grade;
+        const limit = limitMap[limitKey] || 0;
+
+        // 천장 카운트 업데이트
+        document.getElementById(countId).textContent =
+            `(${limit === 0 ? '-' : data.count} / ${limit === 0 ? '-' : limit})`;
+
         // 옵션 테이블 초기화
         const table = document.getElementById(tableId);
-        if (tableId === 'default-table') {
-            table.innerHTML = '<tr><th>잠재옵션</th></tr>';
-        } else if (tableId === 'additional-table') {
-            table.innerHTML = '<tr><th>에디셔널 잠재옵션</th></tr>';
-        }
+        table.innerHTML = tableId === 'default-table'
+            ? '<tr><th>잠재옵션</th></tr>'
+            : '<tr><th>에디셔널 잠재옵션</th></tr>';
 
         // 옵션 추가
         data.options.forEach(opt => {
@@ -63,11 +86,11 @@
     }
 
     document.getElementById('default-btn').addEventListener('click', () => {
-        rollCube('/cube/use', 'default-table', 'grade');
+        rollCube('/cube/use', 'default-table', 'grade', 'default-count');
     });
 
     document.getElementById('additional-btn').addEventListener('click', () => {
-        rollCube('/cube/use/additional', 'additional-table', 'additional-grade');
+        rollCube('/cube/use/additional', 'additional-table', 'additional-grade', 'additional-count');
     });
 
     document.getElementById('reset-btn').addEventListener('click', async () => {
@@ -77,6 +100,10 @@
         // 등급 초기화
         document.getElementById('grade').textContent = data.grade;
         document.getElementById('additional-grade').textContent = data.grade;
+
+        // 천장 카운트 초기화
+        document.getElementById('default-count').textContent = '(0 / 10)';
+        document.getElementById('additional-count').textContent = '(0 / 31)';
 
         // 테이블 초기화
         ['default-table', 'additional-table'].forEach(id => {
@@ -92,7 +119,6 @@
             }
         });
     });
-
 </script>
 
 <div th:replace="~{fragments/footer :: footer}"></div>

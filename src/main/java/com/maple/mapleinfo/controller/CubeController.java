@@ -15,21 +15,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class CubeController {
 
+    private static final String DEFAULT_COUNT = "defaultCount";
+    private static final String ADDITIONAL_COUNT = "additionalCount";
+    private static final String GRADE = "grade";
+    private static final String ADDITIONAL_GRADE = "additionalGrade";
+
     private final CubeService cubeService;
 
     @GetMapping("/cube")
     public String showCubePage(Model model, HttpSession session) {
         // 기본 큐브 등급 초기화
-        if (session.getAttribute("grade") == null) {
-            session.setAttribute("grade", Grade.RARE);
+        if (session.getAttribute(GRADE) == null) {
+            session.setAttribute(GRADE, Grade.RARE);
         }
         // 추가 큐브 등급 초기화
-        if (session.getAttribute("additionalGrade") == null) {
-            session.setAttribute("additionalGrade", Grade.RARE);
+        if (session.getAttribute(ADDITIONAL_GRADE) == null) {
+            session.setAttribute(ADDITIONAL_GRADE, Grade.RARE);
         }
 
-        model.addAttribute("grade", session.getAttribute("grade"));
-        model.addAttribute("additionalGrade", session.getAttribute("additionalGrade"));
+        model.addAttribute(GRADE, session.getAttribute(GRADE));
+        model.addAttribute(ADDITIONAL_GRADE, session.getAttribute(ADDITIONAL_GRADE));
 
         return "cube";
     }
@@ -37,11 +42,15 @@ public class CubeController {
     @GetMapping("/cube/use")
     @ResponseBody
     public Potential useDefaultCube(HttpSession session) {
-        Grade currentGrade = (Grade) session.getAttribute("grade");
+        Grade currentGrade = (Grade) session.getAttribute(GRADE);
+        Integer count = (Integer) session.getAttribute(DEFAULT_COUNT);
         if (currentGrade == null) currentGrade = Grade.RARE;
+        if (count == null) count = 0;
 
-        Potential potential = cubeService.useCube(currentGrade, CubeType.NORMAL);
-        session.setAttribute("grade", potential.getGrade());
+        Potential potential = cubeService.useCube(currentGrade, CubeType.NORMAL, count);
+
+        session.setAttribute(GRADE, potential.getGrade());
+        session.setAttribute(DEFAULT_COUNT, potential.getCount());
 
         return potential;
     }
@@ -49,11 +58,14 @@ public class CubeController {
     @GetMapping("/cube/use/additional")
     @ResponseBody
     public Potential useAdditionalCube(HttpSession session) {
-        Grade currentGrade = (Grade) session.getAttribute("additionalGrade");
-        if (currentGrade == null) currentGrade = Grade.RARE;
+        Grade currentGrade = (Grade) session.getAttribute(ADDITIONAL_GRADE);
+        Integer count = (Integer) session.getAttribute(ADDITIONAL_COUNT);
+        if (currentGrade ==     null) currentGrade = Grade.RARE;
+        if (count == null) count = 0;
 
-        Potential potential = cubeService.useCube(currentGrade, CubeType.ADDITIONAL);
-        session.setAttribute("additionalGrade", potential.getGrade());
+        Potential potential = cubeService.useCube(currentGrade, CubeType.ADDITIONAL, count);
+        session.setAttribute(ADDITIONAL_GRADE, potential.getGrade());
+        session.setAttribute(ADDITIONAL_COUNT, potential.getCount());
 
         return potential;
     }
@@ -61,8 +73,10 @@ public class CubeController {
     @GetMapping("/cube/reset")
     @ResponseBody
     public Potential resetCube(HttpSession session) {
-        session.setAttribute("grade", Grade.RARE);
-        session.setAttribute("additionalGrade", Grade.RARE );
+        session.setAttribute(GRADE, Grade.RARE);
+        session.setAttribute(ADDITIONAL_GRADE, Grade.RARE);
+        session.setAttribute(DEFAULT_COUNT, 0);
+        session.setAttribute(ADDITIONAL_COUNT, 0);
 
         return cubeService.reset();
     }
