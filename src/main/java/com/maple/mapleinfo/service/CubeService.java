@@ -2,8 +2,10 @@ package com.maple.mapleinfo.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maple.mapleinfo.domain.cube.CubeStatistics;
 import com.maple.mapleinfo.domain.cube.Option;
 import com.maple.mapleinfo.domain.cube.Potential;
+import com.maple.mapleinfo.dto.CubeDto;
 import com.maple.mapleinfo.utils.CubeType;
 import com.maple.mapleinfo.utils.Grade;
 import lombok.extern.slf4j.Slf4j;
@@ -225,7 +227,10 @@ public class CubeService {
         );
     }
 
-    public Potential reset() {
-        return new Potential(Grade.RARE, new ArrayList<>(), 0, CubeType.NORMAL);
+    public CubeDto reset() {
+        Potential potential = new Potential(Grade.RARE, new ArrayList<>(), 0, CubeType.DEFAULT);
+        CubeStatistics statistics = new CubeStatistics();
+
+        return new CubeDto(potential, statistics);
     }
 }

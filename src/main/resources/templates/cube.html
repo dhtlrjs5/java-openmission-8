@@ -10,9 +10,17 @@
 <div th:replace="~{fragments/header :: header}"></div>
 
 <main>
+    <aside>
+        <h3>통계</h3>
+        <p>잠재능력 재설정: <span id="stat-default-count">0</span>회</p>
+        <p>에디셔널 재설정: <span id="stat-additional-count">0</span>회</p>
+        <p>잠재능력 재설정 비용: <span id="stat-default-cost">0</span>메소</p>
+        <p>에디셔널 재설정 비용: <span id="stat-additional-cost">0</span>메소</p>
+        <p>총 비용: <span id="stat-total-cost">0</span>메소</p>
+    </aside>
     <!-- 기본 큐브 -->
     <p>
-        기본 큐브 등급: <span id="grade">RARE</span>
+        큐브 등급: <span id="grade">RARE</span>
         <span id="default-count" style="color: #555; font-size: 0.9rem;">(0 / 10)</span>
     </p>
     <table id="default-table">
@@ -58,18 +66,20 @@
     async function rollCube(url, tableId, gradeId, countId) {
         const res = await fetch(url);
         const data = await res.json();
+        const potential = data.potential;
+        const statistics = data.statistics;
 
         // 등급 업데이트
-        document.getElementById(gradeId).textContent = data.grade;
+        document.getElementById(gradeId).textContent = potential.grade;
 
         // limitMap 키 조합: 기본/에디셔널 + 등급
-        const typePrefix = data.type === 'ADDITIONAL' ? 'ADDITIONAL_' : 'DEFAULT_';
-        const limitKey = typePrefix + data.grade;
+        const typePrefix = potential.type === 'ADDITIONAL' ? 'ADDITIONAL_' : 'DEFAULT_';
+        const limitKey = typePrefix + potential.grade;
         const limit = limitMap[limitKey] || 0;
 
         // 천장 카운트 업데이트
         document.getElementById(countId).textContent =
-            `(${limit === 0 ? '-' : data.count} / ${limit === 0 ? '-' : limit})`;
+            `(${limit === 0 ? '-' : potential.count} / ${limit === 0 ? '-' : limit})`;
 
         // 옵션 테이블 초기화
         const table = document.getElementById(tableId);
@@ -78,11 +88,19 @@
             : '<tr><th>에디셔널 잠재옵션</th></tr>';
 
         // 옵션 추가
-        data.options.forEach(opt => {
+        potential.options.forEach(opt => {
             const row = table.insertRow();
             const cell = row.insertCell();
             cell.textContent = opt.name;
         });
+
+        if (statistics) {
+            document.getElementById('stat-default-count').textContent = statistics.defaultCount;
+            document.getElementById('stat-additional-count').textContent = statistics.additionalCount;
+            document.getElementById('stat-default-cost').textContent = statistics.defaultCost;
+            document.getElementById('stat-additional-cost').textContent = statistics.additionalCost;
+            document.getElementById('stat-total-cost').textContent = statistics.totalCost;
+        }
     }
 
     document.getElementById('default-btn').addEventListener('click', () => {
@@ -96,10 +114,11 @@
     document.getElementById('reset-btn').addEventListener('click', async () => {
         const res = await fetch('/cube/reset');
         const data = await res.json();
+        const potential = data.potential;
 
         // 등급 초기화
-        document.getElementById('grade').textContent = data.grade;
-        document.getElementById('additional-grade').textContent = data.grade;
+        document.getElementById('grade').textContent = potential.grade;
+        document.getElementById('additional-grade').textContent = potential.grade;
 
         // 천장 카운트 초기화
         document.getElementById('default-count').textContent = '(0 / 10)';

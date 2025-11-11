@@ -1,15 +1,19 @@
 package com.maple.mapleinfo.domain.cube;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CubeStatistics {
 
-    private Long defaultCount;
-    private Long additionalCount;
-    private Long defaultCost;
-    private Long additionalCost;
-    private Long totalCost;
+    private Long defaultCount = 0L;
+    private Long additionalCount = 0L;
+    private Long defaultCost = 0L;
+    private Long additionalCost = 0L;
+    private Long totalCost = 0L;
 
     public void increaseDefaultCount() {
         ++defaultCount;

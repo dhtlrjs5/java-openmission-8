@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CubeStatisticsService {
 
-    public CubeStatistics updateStatistics(CubeStatistics statistics, CubeType cubeType, Grade grade) {
+    private final CubeStatistics statistics = new CubeStatistics();
+
+    public CubeStatistics updateStatistics(CubeType cubeType, Grade grade) {
 
         String key = cubeType + "_" + grade;
         Long cost = CubeCost.valueOf(key).getCost();
 
-        if (cubeType.equals(CubeType.NORMAL)) {
+        if (cubeType.equals(CubeType.DEFAULT)) {
             statistics.increaseDefaultCount();
             statistics.addDefaultCost(cost);
             statistics.addTotalCost(cost);
