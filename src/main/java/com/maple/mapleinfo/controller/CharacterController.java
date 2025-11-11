@@ -1,7 +1,7 @@
 package com.maple.mapleinfo.controller;
 
 import com.maple.mapleinfo.dto.CharacterBasicInfoDto;
-import com.maple.mapleinfo.service.CharacterService;
+import com.maple.mapleinfo.service.character.CharacterService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

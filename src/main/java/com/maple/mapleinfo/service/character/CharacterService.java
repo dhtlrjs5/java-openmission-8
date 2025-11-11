@@ -1,4 +1,4 @@
-package com.maple.mapleinfo.service;
+package com.maple.mapleinfo.service.character;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -1,4 +1,4 @@
-package com.maple.mapleinfo.domain.wonderberry;
+package com.maple.mapleinfo.domain.wonder_berry;
 
 import java.util.HashMap;
 import java.util.Map;

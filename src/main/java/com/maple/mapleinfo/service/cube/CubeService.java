@@ -1,4 +1,4 @@
-package com.maple.mapleinfo.service;
+package com.maple.mapleinfo.service.cube;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

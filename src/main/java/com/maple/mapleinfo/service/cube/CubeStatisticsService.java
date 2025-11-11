@@ -1,4 +1,4 @@
-package com.maple.mapleinfo.service;
+package com.maple.mapleinfo.service.cube;
 
 import com.maple.mapleinfo.domain.cube.CubeStatistics;
 import com.maple.mapleinfo.utils.CubeCost;
