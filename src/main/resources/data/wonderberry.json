@@ -1,0 +1,16 @@
+{
+  "RARE": [
+    { "name": "크림", "probability": 3.32 },
+    { "name": "샤샤", "probability": 3.32 },
+    { "name": "팬디", "probability": 3.32 }
+  ],
+  "NORMAL": [
+    { "name": "식빵이", "probability": 12.0 },
+    { "name": "빵둘기", "probability": 12.0 },
+    { "name": "제키", "probability": 12.0 },
+    { "name": "제나", "probability": 12.0 },
+    { "name": "제리", "probability": 12.0 },
+    { "name": "고농축 프리미엄 생명의 물", "probability": 15.02 },
+    { "name": "오가닉 원더 쿠키", "probability": 15.02 }
+  ]
+}
