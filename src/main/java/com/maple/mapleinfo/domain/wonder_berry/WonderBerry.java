@@ -1,8 +1,11 @@
 package com.maple.mapleinfo.domain.wonder_berry;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Random;
 
+@Getter
 public class WonderBerry {
 
     private final List<Item> items;

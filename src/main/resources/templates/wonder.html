@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>위습의 원더베리 시뮬레이션</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <style>
+        .item-box { border-radius: 10px; padding: 15px; margin: 20px auto; width: 400px; }
+        .rare-box { border: 2px solid gold; color: goldenrod; font-weight: bold; }
+        .normal-box { border: 1px solid #ccc; }
+        ul { list-style: none; padding: 0; }
+        .result-box { margin: 30px auto; font-size: 1.1rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main style="text-align: center; margin-top: 40px;">
+    <h2>🎲 위습의 원더베리 시뮬레이터</h2>
+
+    <!-- RARE 아이템 -->
+    <div class="item-box rare-box">
+        <h3>✨ RARE 아이템 ✨</h3>
+        <ul id="rare-list">
+            <li>크림</li>
+            <li>샤샤</li>
+            <li>팬디</li>
+        </ul>
+    </div>
+
+    <!-- NORMAL 아이템 -->
+    <div class="item-box normal-box">
+        <h3>일반 아이템</h3>
+        <ul id="normal-list">
+            <li>식빵이</li>
+            <li>빵둘기</li>
+            <li>제키</li>
+            <li>제나</li>
+            <li>제리</li>
+            <li>고농축 프리미엄 생명의 물</li>
+            <li>오가닉 원더 쿠키</li>
+        </ul>
+    </div>
+
+    <!-- 결과 표시 -->
+    <div id="result-box" class="result-box">
+        🎁 뽑은 아이템: <span id="result-item">-</span>
+    </div>
+
+    <!-- 버튼 -->
+    <div style="margin-top: 30px;">
+        <button id="default-btn" class="cube-btn">1회 사용</button>
+    </div>
+
+</main>
+
+<script>
+    async function updateStats(data) {
+        console.log(data)
+        document.getElementById("result-item").textContent = data.item ? data.item.name : "-";
+    }
+
+    document.getElementById("default-btn").addEventListener("click", async () => {
+        const res = await fetch("/wonder/use");
+        const data = await res.json();
+        await updateStats(data);
+    });
+
+    document.getElementById("use10-btn").addEventListener("click", async () => {
+        const res = await fetch("/wonder/use10");
+        const data = await res.json();
+        updateStats(data);
+    });
+
+    document.getElementById("reset-btn").addEventListener("click", async () => {
+        const res = await fetch("/wonder/reset");
+        const data = await res.json();
+        updateStats(data);
+    });
+</script>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

@@ -1,7 +1,9 @@
 package com.maple.mapleinfo.domain.wonder_berry;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor
 public class WonderResult {
 

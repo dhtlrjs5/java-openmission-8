@@ -1,8 +1,11 @@
 package com.maple.mapleinfo.domain.wonder_berry;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public class WonderStatistics {
 
     private Long count = 0L;
