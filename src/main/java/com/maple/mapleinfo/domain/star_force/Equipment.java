@@ -15,8 +15,19 @@ public class Equipment {
         star++;
     }
 
-    public void decreaseStar() {
+    public void failEnhancement() {
+        if (star >= 16 && star != 20) {
+            decreaseStar();
+        }
+    }
+
+    private void decreaseStar() {
         star--;
+    }
+
+    public void destroyedEquipment() {
+        star = 12;
+        destroyed = true;
     }
 
     public void reset() {

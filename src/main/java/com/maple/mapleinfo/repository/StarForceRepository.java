@@ -2,6 +2,7 @@ package com.maple.mapleinfo.repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maple.mapleinfo.domain.star_force.StarForceProbability;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class StarForceRepository {
     private static final String PROBABILITY_PATH = "/data/" + PROBABILITY_FILE_NAME;
     private static final String COST_PATH = "/data/" + COST_FILE_NAME;
 
-    private final Map<Integer, StarForceRepository> probabilities;
+    private final Map<Integer, StarForceProbability> probabilities;
     private final Map<Integer, Long> costs;
 
     public StarForceRepository() {
@@ -39,7 +40,7 @@ public class StarForceRepository {
         }
     }
 
-    public StarForceRepository findProbability(int star) {
+    public StarForceProbability findProbability(int star) {
         return probabilities.get(star);
     }
 
