@@ -30,6 +30,11 @@ public class Equipment {
         destroyed = true;
     }
 
+    public Long repair() {
+        destroyed = false;
+        return price;
+    }
+
     public void reset() {
         star = 0;
         destroyed = false;

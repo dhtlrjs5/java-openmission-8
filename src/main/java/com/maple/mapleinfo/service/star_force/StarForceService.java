@@ -40,4 +40,16 @@ public class StarForceService {
         equipment.failEnhancement();
         return equipment;
     }
+
+    public Equipment repair(Equipment equipment, StarStatistics statistics) {
+
+        if (!equipment.isDestroyed()) {
+            return equipment;
+        }
+
+        Long repairCost = equipment.repair();
+        statistics.addCost(repairCost);
+
+        return equipment;
+    }
 }
