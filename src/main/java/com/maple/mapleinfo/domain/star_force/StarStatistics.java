@@ -1,12 +1,10 @@
 package com.maple.mapleinfo.domain.star_force;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class StarStatistics {
 
     Long totalCost = 0L;

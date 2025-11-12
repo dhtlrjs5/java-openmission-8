@@ -242,20 +242,24 @@ main table tr:last-child td {
 }
 
 /* 기본 큐브 버튼 */
-#default-btn {
+#default-btn,
+#enhance-btn {
     background-color: #6bb6ff; /* 연파랑 */
 }
 
-#default-btn:hover {
+#default-btn:hover,
+#enhance-btn:hover {
     background-color: #4d9efc; /* hover 시 진한 파랑 */
 }
 
 /* 에디셔널 큐브 버튼 */
-#additional-btn {
+#additional-btn,
+#repair-btn {
     background-color: #75d79e; /* 연초록 */
 }
 
-#additional-btn:hover {
+#additional-btn:hover,
+#repair-btn:hover {
     background-color: #52c57f; /* hover 시 진한 초록 */
 }
 
@@ -268,9 +272,22 @@ main table tr:last-child td {
     background-color: #e64b4b; /* hover 시 진한 빨강 */
 }
 
+#set-price-btn {
+    background-color: #ffe0b2;
+}
+
+#set-price-btn:hover {
+    background-color: #ffd54f;
+}
+
 /* 버튼 정렬용 */
 .cube-btn-group {
     text-align: center;
     margin-top: 5px;
 }
 
+.cube-btn:disabled,
+.cube-btn.disabled {
+    background-color: #aaa !important;
+    cursor: not-allowed;
+}

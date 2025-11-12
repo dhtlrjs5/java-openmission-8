@@ -35,7 +35,7 @@ class StarForceServiceTest {
 
     // 통계 객체 초기화 헬퍼 메서드
     private StarStatistics initStats() {
-        return new StarStatistics(0L, 0L, 0L);
+        return new StarStatistics();
     }
 
     @ParameterizedTest(name = "성공: {0}성 강화 성공 시 별이 1개 증가한다")
@@ -49,14 +49,14 @@ class StarForceServiceTest {
     @DisplayName("성공: 강화 성공 시 별이 1개 증가하고 비용과 시도 횟수가 누적된다")
     void enhance_successIncreasesStar(int star, long cost, double successRate) {
         // given
-        Equipment equipment = new Equipment(star, 1_000_000L, false);
+        Equipment equipment = new Equipment(250, star, 1_000_000L, false);
         StarStatistics stats = initStats();
 
         // 성공 판정을 위해 randomValue < successRate 가 되도록 설정 (1.0%로 고정)
         when(mockRandom.nextDouble()).thenReturn(0.01);
         when(repository.findProbability(star))
                 .thenReturn(new StarForceProbability(successRate, 0.0, 0.0));
-        when(repository.findCost(star)).thenReturn(cost);
+        when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
         Equipment result = service.enhance(equipment, stats);
@@ -78,7 +78,7 @@ class StarForceServiceTest {
     @DisplayName("실패(유지): 강화 실패 시 별이 유지되고 비용과 시도 횟수가 누적된다")
     void enhance_failNoDropMaintainsStar(int star, long cost, double successRate, double destroyRate) {
         // given
-        Equipment equipment = new Equipment(star, 1_000_000L, false);
+        Equipment equipment = new Equipment(250, star, 1_000_000L, false);
         StarStatistics stats = initStats();
         double failValue = (successRate + destroyRate / 2.0) / 100;
 
@@ -86,7 +86,7 @@ class StarForceServiceTest {
         when(mockRandom.nextDouble()).thenReturn(failValue);
         when(repository.findProbability(star))
                 .thenReturn(new StarForceProbability(successRate, 100.0 - successRate - destroyRate, destroyRate));
-        when(repository.findCost(star)).thenReturn(cost);
+        when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
         Equipment result = service.enhance(equipment, stats);
@@ -108,7 +108,7 @@ class StarForceServiceTest {
     @DisplayName("실패(하락): 16성 이상(20성 제외)에서 강화 실패 시 별이 1개 하락하고 비용과 시도 횟수가 누적된다")
     void enhance_failDropDecreasesStar(int star, long cost, double successRate, double destroyRate) {
         // given
-        Equipment equipment = new Equipment(star, 1_000_000L, false);
+        Equipment equipment = new Equipment(250, star, 1_000_000L, false);
         StarStatistics stats = initStats();
         double failValue = (successRate + destroyRate / 2.0) / 100;
 
@@ -116,7 +116,7 @@ class StarForceServiceTest {
         when(mockRandom.nextDouble()).thenReturn(failValue);
         when(repository.findProbability(star))
                 .thenReturn(new StarForceProbability(successRate, 100.0 - successRate - destroyRate, destroyRate));
-        when(repository.findCost(star)).thenReturn(cost);
+        when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
         Equipment result = service.enhance(equipment, stats);
@@ -137,14 +137,14 @@ class StarForceServiceTest {
         double destroyRate = 2.1;
         double destroyThreshold = (100.0 - destroyRate) / 100.0; // 0.979
 
-        Equipment equipment = new Equipment(star, 1_000_000L, false);
+        Equipment equipment = new Equipment(250, star, 1_000_000L, false);
         StarStatistics stats = initStats();
 
         // 파괴 판정을 위해 randomValue > (100 - destroyRate) / 100.0 이 되도록 설정
         when(mockRandom.nextDouble()).thenReturn(0.99);
         when(repository.findProbability(star))
                 .thenReturn(new StarForceProbability(30.0, 100.0 - 30.0 - destroyRate, destroyRate));
-        when(repository.findCost(star)).thenReturn(cost);
+        when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
         Equipment result = service.enhance(equipment, stats);
@@ -155,5 +155,22 @@ class StarForceServiceTest {
         assertThat(stats.getTotalCost()).isEqualTo(cost);
         assertThat(stats.getAttempts()).isEqualTo(1L);
         assertThat(stats.getDestruction()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("복구: 장비 복구 시 12성으로 복구하고 누적 금액에 장비 가격이 더해진다")
+    void enhance_repairAddTotalCost() {
+        // given
+        Equipment equipment = new Equipment(250, 12, 1_000_000L, false);
+
+        StarStatistics statistics = new StarStatistics();
+
+        // when
+        Equipment repaired = service.repair(equipment, statistics);
+
+        // then
+        assertThat(repaired.isDestroyed()).isFalse();
+        assertThat(repaired.getStar()).isEqualTo(12);
+        assertThat(statistics.getTotalCost()).isEqualTo(1_000_000L);
     }
 }

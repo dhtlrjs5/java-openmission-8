@@ -20,7 +20,7 @@ public class StarForceService {
 
         int currentStar = equipment.getStar();
         StarForceProbability probability = repository.findProbability(currentStar);
-        Long cost = repository.findCost(currentStar);
+        Long cost = repository.findCost(currentStar, equipment.getLevel());
         statistics.addCost(cost);
         statistics.addAttempts();
 
@@ -37,7 +37,6 @@ public class StarForceService {
             return equipment;
         }
 
-        equipment.failEnhancement();
         return equipment;
     }
 
@@ -47,9 +46,15 @@ public class StarForceService {
             return equipment;
         }
 
-        Long repairCost = equipment.repair();
-        statistics.addCost(repairCost);
+        Long price = equipment.getPrice();
+
+        equipment.repair();
+        statistics.addCost(price);
 
         return equipment;
+    }
+
+    public StarStatistics reset() {
+        return new StarStatistics();
     }
 }

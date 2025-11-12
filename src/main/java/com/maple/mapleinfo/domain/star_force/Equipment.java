@@ -7,22 +7,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class Equipment {
 
+    Integer level;
     Integer star;
-    Long price;
+    Long price = 0L;
     boolean destroyed;
 
     public void increaseStar() {
         star++;
-    }
-
-    public void failEnhancement() {
-        if (star >= 16 && star != 20) {
-            decreaseStar();
-        }
-    }
-
-    private void decreaseStar() {
-        star--;
     }
 
     public void destroyedEquipment() {
@@ -30,9 +21,8 @@ public class Equipment {
         destroyed = true;
     }
 
-    public Long repair() {
+    public void repair() {
         destroyed = false;
-        return price;
     }
 
     public void reset() {
