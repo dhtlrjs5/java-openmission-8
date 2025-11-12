@@ -28,8 +28,8 @@ public class CubeService {
     private static final int EPIC_TO_UNIQUE_ADDITIONAL_LIMIT = 76;
     private static final int UNIQUE_TO_LEGENDARY_ADDITIONAL_LIMIT = 214;
 
-    private static final String DEFAULT_PATH = "/data/cube-weapon.json";
-    private static final String ADDITIONAL_PATH = "/data/additional-cube-weapon.json";
+    private static final String DEFAULT_PATH = "/data/cube_weapon.json";
+    private static final String ADDITIONAL_PATH = "/data/additional_cube_weapon.json";
 
     private final JsonNode defaultRoot;
     private final JsonNode additionalRoot;
@@ -44,7 +44,7 @@ public class CubeService {
             }
             defaultRoot = mapper.readTree(inputStream);
         } catch (Exception e) {
-            throw new IllegalStateException("cube-weapon.json 로드 실패", e);
+            throw new IllegalStateException("cube_weapon.json 로드 실패", e);
         }
 
         try (InputStream inputStream = getClass().getResourceAsStream(ADDITIONAL_PATH)) {
@@ -53,7 +53,7 @@ public class CubeService {
             }
             additionalRoot = mapper.readTree(inputStream);
         } catch (Exception e) {
-            throw new IllegalStateException("additional-cube-weapon.json 로드 실패", e);
+            throw new IllegalStateException("additional_cube_weapon.json 로드 실패", e);
         }
     }
 

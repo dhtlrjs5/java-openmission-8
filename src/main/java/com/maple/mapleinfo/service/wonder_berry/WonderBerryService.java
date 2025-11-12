@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class WonderBerryService {
 
-    private static final String FILE_NAME = "wonder-berry.json";
+    private static final String FILE_NAME = "wonder_berry.json";
     private static final String RESOURCE_PATH = "/data/" + FILE_NAME;
 
     private final WonderBerry wonderBerry;
