@@ -50,10 +50,15 @@ public class StarForceController {
         return new StarForceDto(statistics, newEquipment);
     }
 
-    @GetMapping("/reset")
-    public StarForceDto reset() {
-        StarStatistics statistics = service.reset(); // 통계 초기화
+    @GetMapping("/star/reset")
+    @ResponseBody
+    public StarForceDto reset(HttpSession session) {
+        StarStatistics statistics = service.reset();
+
         Equipment resetEquipment = new Equipment(250, 0, 0L, false); // 장비 초기화
+
+        session.setAttribute("starStatistics", statistics);
+        session.setAttribute("equipment", resetEquipment);
 
         return new StarForceDto(statistics, resetEquipment);
     }

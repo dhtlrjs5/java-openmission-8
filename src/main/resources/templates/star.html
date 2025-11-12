@@ -143,12 +143,27 @@
         await handleResponse(res);
     });
 
-    document.getElementById("reset-btn").addEventListener("click", () => {
-        equipment.level = 250;
-        equipment.star = 0;
-        equipment.price = 0;
-        equipment.destroyed = false;
-        window.starStatistics = { totalCost: 0, attempts: 0, destruction: 0 };
+    document.getElementById("reset-btn").addEventListener("click", async () => {
+
+        const res = await fetch("/star/reset");
+
+        if (!res.ok) {
+            alert(`서버 초기화 실패: ${res.status}`);
+            return;
+        }
+
+        const responseData = await res.json();
+
+        const resultEquipment = responseData.equipment || responseData;
+        const resultStatistics = responseData.statistics || { totalCost: 0, attempts: 0, destruction: 0 };
+
+        equipment.star = resultEquipment.star || 0;
+        equipment.price = resultEquipment.price || 0;
+        equipment.destroyed = resultEquipment.destroyed || false;
+        equipment.level = 250; // 레벨은 하드코딩된 값으로 유지
+
+        window.starStatistics = resultStatistics;
+
         updateView();
     });
 
