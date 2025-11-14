@@ -5,6 +5,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Random;
 
+import static com.maple.mapleinfo.utils.ErrorMessages.ERROR_INVALID_PROBABILITY_SUM;
+
 @Getter
 public class WonderBerry {
 
@@ -34,7 +36,7 @@ public class WonderBerry {
             }
         }
 
-        throw new IllegalStateException("확률 합계가 100%가 아닙니다.");
+        throw new IllegalStateException(ERROR_INVALID_PROBABILITY_SUM);
     }
 
     public WonderResult useTenTimes() {

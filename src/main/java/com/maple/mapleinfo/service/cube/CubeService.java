@@ -7,6 +7,7 @@ import com.maple.mapleinfo.domain.cube.Option;
 import com.maple.mapleinfo.domain.cube.Potential;
 import com.maple.mapleinfo.dto.CubeDto;
 import com.maple.mapleinfo.utils.CubeType;
+import com.maple.mapleinfo.utils.ErrorMessages;
 import com.maple.mapleinfo.utils.Grade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static com.maple.mapleinfo.utils.ErrorMessages.*;
 
 @Slf4j
 @Service
@@ -28,8 +31,19 @@ public class CubeService {
     private static final int EPIC_TO_UNIQUE_ADDITIONAL_LIMIT = 76;
     private static final int UNIQUE_TO_LEGENDARY_ADDITIONAL_LIMIT = 214;
 
-    private static final String DEFAULT_PATH = "/data/cube_weapon.json";
-    private static final String ADDITIONAL_PATH = "/data/additional_cube_weapon.json";
+    private static final int RESET_COUNT = 0;
+    private static final double PROBABILITY_SCALE = 100.0;
+    private static final String DEFAULT_PROBABILITY_VALUE = "0%";
+
+    private static final String DEFAULT_FILE_NAME = "cube_weapon.json";
+    private static final String ADDITIONAL_FILE_NAME = "additional_cube_weapon.json";
+    private static final String DEFAULT_PATH = "/data/" + DEFAULT_FILE_NAME;
+    private static final String ADDITIONAL_PATH = "/data/" + ADDITIONAL_FILE_NAME;
+
+    private static final String ERROR_DEFAULT_FILE_NOT_FOUND = DEFAULT_FILE_NAME + SUFFIX_NOT_FOUND;
+    private static final String ERROR_DEFAULT_FILE_FAIL_LOADING = DEFAULT_FILE_NAME + SUFFIX_FAIL_LOADING;
+    private static final String ERROR_ADDITIONAL_FILE_NOT_FOUND = ADDITIONAL_FILE_NAME + SUFFIX_NOT_FOUND;
+    private static final String ERROR_ADDITIONAL_FILE_FAIL_LOADING = ADDITIONAL_FILE_NAME + SUFFIX_FAIL_LOADING;
 
     private final JsonNode defaultRoot;
     private final JsonNode additionalRoot;
@@ -40,20 +54,20 @@ public class CubeService {
 
         try (InputStream inputStream = getClass().getResourceAsStream(DEFAULT_PATH)) {
             if (inputStream == null) {
-                throw new FileNotFoundException(DEFAULT_PATH + " not found");
+                throw new FileNotFoundException(ERROR_DEFAULT_FILE_NOT_FOUND);
             }
             defaultRoot = mapper.readTree(inputStream);
         } catch (Exception e) {
-            throw new IllegalStateException("cube_weapon.json 로드 실패", e);
+            throw new IllegalStateException(ERROR_DEFAULT_FILE_FAIL_LOADING);
         }
 
         try (InputStream inputStream = getClass().getResourceAsStream(ADDITIONAL_PATH)) {
             if (inputStream == null) {
-                throw new FileNotFoundException(ADDITIONAL_PATH + " not found");
+                throw new FileNotFoundException(ERROR_ADDITIONAL_FILE_NOT_FOUND);
             }
             additionalRoot = mapper.readTree(inputStream);
         } catch (Exception e) {
-            throw new IllegalStateException("additional_cube_weapon.json 로드 실패", e);
+            throw new IllegalStateException(ERROR_ADDITIONAL_FILE_FAIL_LOADING);
         }
     }
 
@@ -85,13 +99,13 @@ public class CubeService {
 
         if (newGrade != grade) {
             rollOption(newGrade, options, cube);
-            return new Potential(newGrade, options, 0, type);
+            return new Potential(newGrade, options, RESET_COUNT, type);
         }
 
         newGrade = upgrade(grade, cube);
         if (newGrade != grade) {
             rollOption(newGrade, options, cube);
-            return new Potential(newGrade, options, 0, type);
+            return new Potential(newGrade, options, RESET_COUNT, type);
         }
 
         rollOption(newGrade, options, cube);
@@ -111,7 +125,7 @@ public class CubeService {
             return grade;
         }
 
-        double randomValue = random.nextDouble() * 100.0;
+        double randomValue = random.nextDouble() * PROBABILITY_SCALE;
 
         if (randomValue <= probability.asDouble()) {
             grade = grade.next();
@@ -153,7 +167,7 @@ public class CubeService {
     private void rollOption(Grade grade, List<Option> options, JsonNode cube) {
         JsonNode gradeNode = loadGradeNode(grade, cube);
         if (gradeNode == null) {
-            throw new IllegalArgumentException("grade 오류");
+            throw new IllegalArgumentException(ERROR_WRONG_DATA);
         }
 
         JsonNode firstNode = gradeNode.path("first");
@@ -200,7 +214,7 @@ public class CubeService {
 
     private Option getRandomOption(JsonNode optionsNode) {
         if (optionsNode.isMissingNode() || optionsNode.isNull()) {
-            throw new IllegalStateException("잘못된 데이터 입니다.");
+            throw new IllegalStateException(ERROR_WRONG_DATA);
         }
 
         double totalProbability = 0.0;
@@ -214,16 +228,16 @@ public class CubeService {
         for (JsonNode node : optionsNode) {
             cumulativeProbability += node.path("probability").asDouble();
             if (randomValue <= cumulativeProbability) {
-                String name = node.path("option").asText("알 수 없음");
-                String probability = node.path("probability").asText("0%");
+                String name = node.path("option").asText(ERROR_WRONG_DATA);
+                String probability = node.path("probability").asText(DEFAULT_PROBABILITY_VALUE);
                 return new Option(name, probability + "%");
             }
         }
 
         JsonNode fallback = optionsNode.get(0);
         return new Option(
-                fallback.path("option").asText("알 수 없음"),
-                fallback.path("probability").asText("0%") + "%"
+                fallback.path("option").asText(ERROR_WRONG_DATA),
+                fallback.path("probability").asText(DEFAULT_PROBABILITY_VALUE) + "%"
         );
     }
 

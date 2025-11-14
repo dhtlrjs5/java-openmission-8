@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.domain.wonder_berry.Item;
 import com.maple.mapleinfo.domain.wonder_berry.WonderBerry;
 import com.maple.mapleinfo.domain.wonder_berry.WonderResult;
+import com.maple.mapleinfo.utils.ErrorMessages;
 import com.maple.mapleinfo.utils.Rarity;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +14,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.maple.mapleinfo.utils.ErrorMessages.*;
+
 @Service
 public class WonderBerryService {
 
     private static final String FILE_NAME = "wonder_berry.json";
     private static final String RESOURCE_PATH = "/data/" + FILE_NAME;
+
+    private static final String ERROR_FILE_NOT_FOUND = FILE_NAME + SUFFIX_NOT_FOUND;
+    private static final String ERROR_FILE_FAIL_LOADING = FILE_NAME + SUFFIX_FAIL_LOADING;
 
     private final WonderBerry wonderBerry;
 
@@ -28,11 +34,11 @@ public class WonderBerryService {
         JsonNode root;
         try (InputStream inputStream = getClass().getResourceAsStream(RESOURCE_PATH)) {
             if (inputStream == null) {
-                throw new FileNotFoundException(RESOURCE_PATH + " not found");
+                throw new FileNotFoundException(ERROR_FILE_NOT_FOUND);
             }
             root = mapper.readTree(inputStream);
         } catch (Exception e) {
-            throw new IllegalStateException(FILE_NAME + " 로드 실패");
+            throw new IllegalStateException(ERROR_FILE_FAIL_LOADING);
         }
 
         List<Item> items = new ArrayList<>();

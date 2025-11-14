@@ -22,6 +22,8 @@ import lombok.Getter;
 @Getter
 public class CharacterBasicInfoDto {
 
+    private static final String FORMAT_TO_STRING = "%s (%s@%s) [%s] Lv.%d (%s%%)";
+
     @JsonProperty("character_name")
     private String name;
 
@@ -45,6 +47,6 @@ public class CharacterBasicInfoDto {
 
     @Override
     public String toString() {
-        return String.format("%s (%s@%s) [%s] Lv.%d (%s%%)", name, world, guild, job, level, expRate);
+        return String.format(FORMAT_TO_STRING, name, world, guild, job, level, expRate);
     }
 }

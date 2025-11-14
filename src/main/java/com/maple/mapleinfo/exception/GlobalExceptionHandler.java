@@ -4,6 +4,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import static com.maple.mapleinfo.utils.ErrorMessages.ERROR_GENERAL_EXCEPTION;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -14,8 +16,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleGeneralException(Exception e, Model model) {
-        model.addAttribute("message", "일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    public String handleGeneralException(Model model) {
+        model.addAttribute("message", ERROR_GENERAL_EXCEPTION);
         return "error";
     }
 }

@@ -9,6 +9,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static com.maple.mapleinfo.utils.ErrorMessages.*;
+
 @Repository
 public class StarForceRepository {
 
@@ -16,6 +18,11 @@ public class StarForceRepository {
     private static final String COST_FILE_NAME = "star_force_costs.json";
     private static final String PROBABILITY_PATH = "/data/" + PROBABILITY_FILE_NAME;
     private static final String COST_PATH = "/data/" + COST_FILE_NAME;
+
+    private static final String ERROR_PROBABILITY_FILE_NOT_FOUND = PROBABILITY_FILE_NAME + SUFFIX_NOT_FOUND;
+    private static final String ERROR_PROBABILITY_FILE_FAIL_LOADING = PROBABILITY_FILE_NAME + SUFFIX_FAIL_LOADING;
+    private static final String ERROR_COST_FILE_NOT_FOUND = COST_FILE_NAME + SUFFIX_NOT_FOUND;
+    private static final String ERROR_COST_FILE_FAIL_LOADING = COST_FILE_NAME + SUFFIX_FAIL_LOADING;
 
     private final JsonNode probabilityRoot;
     private final JsonNode costRoot;
@@ -25,22 +32,22 @@ public class StarForceRepository {
 
         try (InputStream probabilityStream = getClass().getResourceAsStream(PROBABILITY_PATH)){
             if (probabilityStream == null) {
-                throw new FileNotFoundException(PROBABILITY_FILE_NAME + " not found");
+                throw new FileNotFoundException(ERROR_PROBABILITY_FILE_NOT_FOUND);
             }
 
             probabilityRoot = mapper.readTree(probabilityStream);
         } catch (IOException e) {
-            throw new IllegalStateException(PROBABILITY_FILE_NAME + " 로드 실패");
+            throw new IllegalStateException(ERROR_PROBABILITY_FILE_FAIL_LOADING);
         }
 
         try (InputStream costStream = getClass().getResourceAsStream(COST_PATH)){
             if (costStream == null) {
-                throw new FileNotFoundException(COST_FILE_NAME + " not found");
+                throw new FileNotFoundException(ERROR_COST_FILE_NOT_FOUND);
             }
 
             costRoot = mapper.readTree(costStream);
         } catch (IOException e) {
-            throw new IllegalStateException(COST_FILE_NAME + " 로드 실패");
+            throw new IllegalStateException(ERROR_COST_FILE_FAIL_LOADING);
         }
     }
 

@@ -13,6 +13,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static com.maple.mapleinfo.utils.ErrorMessages.*;
+
 @Slf4j
 @Component
 public class MapleApiClient {
@@ -54,7 +56,7 @@ public class MapleApiClient {
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            throw new CharacterNotFoundException("잘못된 캐릭터명 입니다.");
+            throw new CharacterNotFoundException(ERROR_INVALID_CHARACTER_NAME);
         }
     }
 
@@ -77,7 +79,7 @@ public class MapleApiClient {
 
             return response.getBody();
         } catch (HttpClientErrorException e) {
-            throw new CharacterNotFoundException("캐릭터 정보를 불러올 수 없습니다.");
+            throw new CharacterNotFoundException(ERROR_CHARACTER_INFO_NOT_FOUND);
         }
     }
 }
