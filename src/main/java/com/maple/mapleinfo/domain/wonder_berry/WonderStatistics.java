@@ -1,32 +1,51 @@
 package com.maple.mapleinfo.domain.wonder_berry;
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@Getter
 public class WonderStatistics {
 
-    private Long count = 0L;
-    private Long cost = 0L;
-    private final Map<String, Long> itemCount = new HashMap<>();
+    private WonderStatusSummary summary;
+    private final Map<String, Long> itemCount;
+
+    public WonderStatistics() {
+        summary = new WonderStatusSummary();
+        itemCount = new HashMap<>();
+    }
 
     public void addCount() {
-        count++;
+        summary = summary.addCount();
     }
 
     public void addCost(long amount) {
-        cost += amount;
+        summary = summary.addCost(amount);
     }
 
     public void addItem(String itemName) {
-        itemCount.put(itemName, itemCount.getOrDefault(itemName, 0L) + 1);
+        long count = itemCount.getOrDefault(itemName, 0L);
+
+        itemCount.put(itemName, count + 1);
     }
 
     public void reset() {
-        count = 0L;
-        cost = 0L;
+        summary = new WonderStatusSummary();
         itemCount.clear();
+    }
+
+    public Long getCount() {
+        return summary.getCount();
+    }
+
+    public Long getCost() {
+        return summary.getCost();
+    }
+
+    public Map<String, Long> getItemCount() {
+        return itemCount.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue
+                ));
     }
 }

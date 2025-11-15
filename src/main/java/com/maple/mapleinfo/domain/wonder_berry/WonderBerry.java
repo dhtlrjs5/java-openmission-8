@@ -8,10 +8,11 @@ public class WonderBerry {
     private static final int USE_TEN_TIMES = 10;
 
     private final WonderBerryItems items;
-    private final WonderStatistics statistics = new WonderStatistics();
+    private final WonderStatistics statistics;
 
     public WonderBerry(List<Item> items) {
         this.items = new WonderBerryItems(items);
+        statistics = new WonderStatistics();
     }
 
     public WonderResult useWonderBerry() {

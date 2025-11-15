@@ -32,11 +32,16 @@ class WonderBerryTest {
         );
 
         mockRandom = mock(Random.class);
-
         wonderBerry = new WonderBerry(testItems);
-        Field randomField = WonderBerry.class.getDeclaredField("random");
+
+        Field itemsField = WonderBerry.class.getDeclaredField("items");
+        itemsField.setAccessible(true);
+        WonderBerryItems itemsInstance = (WonderBerryItems) itemsField.get(wonderBerry);
+
+        Field randomField = WonderBerryItems.class.getDeclaredField("random");
         randomField.setAccessible(true);
-        randomField.set(wonderBerry, mockRandom);
+
+        randomField.set(itemsInstance, mockRandom);
     }
 
     @Test
@@ -53,7 +58,7 @@ class WonderBerryTest {
         // then
         assertEquals("RARE", result.getItem().getName(), "RARE가 뽑혀야 한다");
         assertEquals(1L, stats.getCount(), "사용 횟수가 1 증가해야 한다");
-        assertEquals(5500L, stats.getCost(), "비용이 5500L 증가해야 한다");
+        assertEquals(5500L, stats.getCost(), "비용이 5500L 증가해야 한다"); // 상수 사용이 불가능하여 매직넘버 유지
         assertEquals(1L, stats.getItemCount().get("RARE"), "RARE 획득 횟수가 1 증가해야 한다");
     }
 
@@ -64,14 +69,18 @@ class WonderBerryTest {
         // 10회 동안 항상 NORMAL을 뽑도록 Mock
         when(mockRandom.nextDouble()).thenReturn(0.50);
 
+        // 예상되는 총 비용: 5500L * 10
+        final long EXPECTED_TOTAL_COST = 55000L;
+        final long EXPECTED_COUNT = 10L;
+
         // when
         WonderResult result = wonderBerry.useTenTimes();
         WonderStatistics stats = result.getStatistics();
 
         // then
-        assertEquals(10L, stats.getCount(), "사용 횟수가 10 증가해야 한다");
-        assertEquals(55000L, stats.getCost(), "비용이 5500L * 10 증가해야 한다");
-        assertEquals(10L, stats.getItemCount().get("NORMAL"), "아이템 획득 횟수가 10 증가해야 한다");
+        assertEquals(EXPECTED_COUNT, stats.getCount(), "사용 횟수가 10 증가해야 한다");
+        assertEquals(EXPECTED_TOTAL_COST, stats.getCost(), "비용이 5500L * 10 증가해야 한다");
+        assertEquals(EXPECTED_COUNT, stats.getItemCount().get("NORMAL"), "아이템 획득 횟수가 10 증가해야 한다");
     }
 
     @Test
