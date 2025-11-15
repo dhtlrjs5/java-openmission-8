@@ -19,45 +19,39 @@ public class StarForceRepository {
     private static final String PROBABILITY_PATH = "/data/" + PROBABILITY_FILE_NAME;
     private static final String COST_PATH = "/data/" + COST_FILE_NAME;
 
-    private static final String ERROR_PROBABILITY_FILE_NOT_FOUND = PROBABILITY_FILE_NAME + SUFFIX_NOT_FOUND;
-    private static final String ERROR_PROBABILITY_FILE_FAIL_LOADING = PROBABILITY_FILE_NAME + SUFFIX_FAIL_LOADING;
-    private static final String ERROR_COST_FILE_NOT_FOUND = COST_FILE_NAME + SUFFIX_NOT_FOUND;
-    private static final String ERROR_COST_FILE_FAIL_LOADING = COST_FILE_NAME + SUFFIX_FAIL_LOADING;
-
     private final JsonNode probabilityRoot;
     private final JsonNode costRoot;
 
     public StarForceRepository() {
         ObjectMapper mapper = new ObjectMapper();
 
-        try (InputStream probabilityStream = getClass().getResourceAsStream(PROBABILITY_PATH)){
-            if (probabilityStream == null) {
-                throw new FileNotFoundException(ERROR_PROBABILITY_FILE_NOT_FOUND);
+        probabilityRoot = loadJsonFile(mapper, PROBABILITY_PATH, PROBABILITY_FILE_NAME);
+        costRoot = loadJsonFile(mapper, COST_PATH, COST_FILE_NAME);
+    }
+
+    private JsonNode loadJsonFile(ObjectMapper mapper, String path, String fileName) {
+        try (InputStream stream = getClass().getResourceAsStream(path)){
+            if (stream == null) {
+                throw new FileNotFoundException(fileName + SUFFIX_NOT_FOUND);
             }
-
-            probabilityRoot = mapper.readTree(probabilityStream);
+            return mapper.readTree(stream);
         } catch (IOException e) {
-            throw new IllegalStateException(ERROR_PROBABILITY_FILE_FAIL_LOADING);
-        }
-
-        try (InputStream costStream = getClass().getResourceAsStream(COST_PATH)){
-            if (costStream == null) {
-                throw new FileNotFoundException(ERROR_COST_FILE_NOT_FOUND);
-            }
-
-            costRoot = mapper.readTree(costStream);
-        } catch (IOException e) {
-            throw new IllegalStateException(ERROR_COST_FILE_FAIL_LOADING);
+            throw new IllegalStateException(fileName + SUFFIX_FAIL_LOADING);
         }
     }
 
     public StarForceProbability findProbability(int star) {
         String stars = String.valueOf(star);
         JsonNode node = probabilityRoot.path(stars);
+
         if (node.isMissingNode()) {
             return null;
         }
 
+        return getStarForceProbability(node);
+    }
+
+    private static StarForceProbability getStarForceProbability(JsonNode node) {
         JsonNode successNode = node.path("success");
         JsonNode failNode = node.path("fail");
         JsonNode destroyNode = node.path("destroy");

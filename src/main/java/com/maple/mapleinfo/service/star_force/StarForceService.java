@@ -32,7 +32,7 @@ public class StarForceService {
             StarForceProbability probability
     ) {
         double randomValue = random.nextDouble() * PROBABILITY_SCALE;
-        
+
         if (randomValue < probability.getSuccess()) {
             equipment.increaseStar();
             return equipment;
