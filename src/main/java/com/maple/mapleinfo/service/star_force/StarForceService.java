@@ -13,31 +13,49 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class StarForceService {
 
-    private final StarForceRepository repository;
+    private static final double PROBABILITY_SCALE = 100.0;
+
     private final Random random = new Random();
+    private final StarForceRepository repository;
 
     public Equipment enhance(Equipment equipment, StarStatistics statistics) {
 
-        int currentStar = equipment.getStar();
-        StarForceProbability probability = repository.findProbability(currentStar);
-        Long cost = repository.findCost(currentStar, equipment.getLevel());
-        statistics.addCost(cost);
-        statistics.addAttempts();
+        Integer star = updateStatistics(equipment, statistics);
+        StarForceProbability probability = repository.findProbability(star);
 
-        double randomValue = random.nextDouble() * 100.0;
+        return enhancementResult(equipment, statistics,  probability);
+    }
 
+    private Equipment enhancementResult(
+            Equipment equipment,
+            StarStatistics statistics,
+            StarForceProbability probability
+    ) {
+        double randomValue = random.nextDouble() * PROBABILITY_SCALE;
+        
         if (randomValue < probability.getSuccess()) {
             equipment.increaseStar();
             return equipment;
         }
 
-        if (randomValue > 100.0 - probability.getDestroy()) {
+        if (randomValue > PROBABILITY_SCALE - probability.getDestroy()) {
             equipment.destroyedEquipment();
             statistics.addDestruction();
             return equipment;
         }
 
         return equipment;
+    }
+
+    private Integer updateStatistics(Equipment equipment, StarStatistics statistics) {
+        Integer star = equipment.getStar();
+        Integer level = equipment.getLevel();
+        Long cost = repository.findCost(star, level);
+
+        statistics.addCost(cost);
+        statistics.addAttempts();
+
+        return star;
     }
 
     public Equipment repair(Equipment equipment, StarStatistics statistics) {

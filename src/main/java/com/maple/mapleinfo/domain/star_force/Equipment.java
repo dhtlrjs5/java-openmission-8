@@ -9,8 +9,15 @@ public class Equipment {
 
     Integer level;
     Integer star;
-    Long price = 0L;
+    Long price;
     boolean destroyed;
+
+    public Equipment() {
+        level = 0;
+        star = 0;
+        price = 0L;
+        destroyed = false;
+    }
 
     public void increaseStar() {
         star++;
@@ -25,8 +32,7 @@ public class Equipment {
         destroyed = false;
     }
 
-    public void reset() {
-        star = 0;
-        destroyed = false;
+    public Equipment newPrice(Long price) {
+        return new Equipment(level, star, price, destroyed);
     }
 }

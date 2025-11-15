@@ -10,17 +10,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/star")
 @RequiredArgsConstructor
 public class StarForceController {
 
     private final StarForceService service;
 
-    @GetMapping("/star")
+    @GetMapping()
     public String showStar() {
         return "star";
     }
 
-    @PostMapping("/star/enhance")
+    @PostMapping("/enhance")
     @ResponseBody
     public StarForceDto enhance(@RequestBody Equipment equipment, HttpSession session) {
         StarStatistics statistics = getStatistics(session);
@@ -29,7 +30,7 @@ public class StarForceController {
         return new StarForceDto(statistics, updatedEquipment);
     }
 
-    @PostMapping("/star/repair")
+    @PostMapping("/repair")
     @ResponseBody
     public StarForceDto repair(@RequestBody Equipment equipment, HttpSession session) {
         StarStatistics statistics = getStatistics(session);
@@ -38,24 +39,24 @@ public class StarForceController {
         return new StarForceDto(statistics, repaired);
     }
 
-    @PostMapping("/star/set-price")
+    @PostMapping("/set-price")
     @ResponseBody
     public StarForceDto setPrice(@RequestBody Equipment equipment, HttpSession session) {
         StarStatistics statistics = getStatistics(session);
-        //임시용 레벨 250 고정
-        Equipment newEquipment = new Equipment(250, equipment.getStar(), equipment.getPrice(), equipment.isDestroyed());
+        Long price = equipment.getPrice();
 
+        Equipment newEquipment = equipment.newPrice(price);
         session.setAttribute("equipment", newEquipment);
 
         return new StarForceDto(statistics, newEquipment);
     }
 
-    @GetMapping("/star/reset")
+    @GetMapping("/reset")
     @ResponseBody
     public StarForceDto reset(HttpSession session) {
         StarStatistics statistics = service.reset();
 
-        Equipment resetEquipment = new Equipment(250, 0, 0L, false); // 장비 초기화
+        Equipment resetEquipment = new Equipment();
 
         session.setAttribute("starStatistics", statistics);
         session.setAttribute("equipment", resetEquipment);
