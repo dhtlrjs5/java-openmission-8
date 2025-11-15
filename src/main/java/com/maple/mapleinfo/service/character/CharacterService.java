@@ -30,8 +30,8 @@ public class CharacterService {
 
         try {
             JsonNode rootNode = objectMapper.readTree(ocidJson);
-
-            ocid = rootNode.path("ocid").asText();
+            JsonNode ocidNode = rootNode.path("ocid");
+            ocid = ocidNode.asText();
         } catch (JsonProcessingException e) {
             ocid = null;
         }

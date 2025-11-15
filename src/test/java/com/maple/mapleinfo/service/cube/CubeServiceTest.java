@@ -1,6 +1,7 @@
 package com.maple.mapleinfo.service.cube;
 
 import com.maple.mapleinfo.domain.cube.Potential;
+import com.maple.mapleinfo.dto.PotentialDto;
 import com.maple.mapleinfo.utils.CubeType;
 import com.maple.mapleinfo.utils.Grade;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,9 +41,10 @@ class CubeServiceTest {
         // RARE_TO_EPIC_DEFAULT_LIMIT = 10 이므로, count가 9인 상태에서 사용하면 10이 되어 천장 발동
         int initialCount = 9;
         Grade initialGrade = Grade.RARE;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // when
-        Potential potentialAfterLimit = cubeService.useCube(initialGrade, CubeType.DEFAULT, initialCount);
+        Potential potentialAfterLimit = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.EPIC, potentialAfterLimit.getGrade(), "천장 횟수에 도달하여 EPIC으로 승급해야 한다");
@@ -55,9 +57,10 @@ class CubeServiceTest {
         // given
         int initialCount = 41;
         Grade initialGrade = Grade.EPIC;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // when
-        Potential potentialAfterLimit = cubeService.useCube(initialGrade, CubeType.DEFAULT, initialCount);
+        Potential potentialAfterLimit = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.UNIQUE, potentialAfterLimit.getGrade(), "천장 횟수에 도달하여 UNIQUE로 승급해야 한다");
@@ -70,9 +73,10 @@ class CubeServiceTest {
         // given
         int initialCount = 106;
         Grade initialGrade = Grade.UNIQUE;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // when
-        Potential potentialAfterLimit = cubeService.useCube(initialGrade, CubeType.DEFAULT, initialCount);
+        Potential potentialAfterLimit = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.LEGENDARY, potentialAfterLimit.getGrade(), "천장 횟수에 도달하여 LEGENDARY로 승급해야 한다");
@@ -85,12 +89,13 @@ class CubeServiceTest {
         // given RARE_TO_EPIC 확률은 15.0%
         int initialCount = 0;
         Grade initialGrade = Grade.RARE;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // random.nextDouble() * 100.0 이 15.0보다 크도록 Mock
         when(random.nextDouble()).thenReturn(0.50); // 50.0% (승급 실패)
 
         // when
-        Potential result = cubeService.useCube(initialGrade, CubeType.DEFAULT, initialCount);
+        Potential result = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.RARE, result.getGrade(), "확률 승급에 실패하여 RARE 등급이 유지되어야 한다");
@@ -104,9 +109,10 @@ class CubeServiceTest {
         // given
         int initialCount = 30;
         Grade initialGrade = Grade.RARE;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // when
-        Potential potentialAfterLimit = cubeService.useCube(initialGrade, CubeType.ADDITIONAL, initialCount);
+        Potential potentialAfterLimit = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.EPIC, potentialAfterLimit.getGrade(), "천장 횟수에 도달하여 EPIC으로 승급해야 한다");
@@ -119,9 +125,10 @@ class CubeServiceTest {
         // given
         int initialCount = 75;
         Grade initialGrade = Grade.EPIC;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // when
-        Potential potentialAfterLimit = cubeService.useCube(initialGrade, CubeType.ADDITIONAL, initialCount);
+        Potential potentialAfterLimit = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.UNIQUE, potentialAfterLimit.getGrade(), "천장 횟수에 도달하여 UNIQUE로 승급해야 한다");
@@ -134,9 +141,10 @@ class CubeServiceTest {
         // given
         int initialCount = 213;
         Grade initialGrade = Grade.UNIQUE;
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
 
         // when
-        Potential potentialAfterLimit = cubeService.useCube(initialGrade, CubeType.ADDITIONAL, initialCount);
+        Potential potentialAfterLimit = cubeService.useCube(potentialDto);
 
         // then
         assertEquals(Grade.LEGENDARY, potentialAfterLimit.getGrade(), "천장 횟수에 도달하여 LEGENDARY로 승급해야 한다");

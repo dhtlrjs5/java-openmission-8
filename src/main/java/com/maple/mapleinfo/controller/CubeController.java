@@ -3,87 +3,71 @@ package com.maple.mapleinfo.controller;
 import com.maple.mapleinfo.domain.cube.CubeStatistics;
 import com.maple.mapleinfo.domain.cube.Potential;
 import com.maple.mapleinfo.dto.CubeDto;
+import com.maple.mapleinfo.dto.PotentialDto;
 import com.maple.mapleinfo.service.cube.CubeService;
+import com.maple.mapleinfo.service.cube.CubeSessionManager;
 import com.maple.mapleinfo.service.cube.CubeStatisticsService;
 import com.maple.mapleinfo.utils.CubeType;
-import com.maple.mapleinfo.utils.Grade;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import static com.maple.mapleinfo.utils.SessionKeys.*;
+
 @Controller
+@RequestMapping("/cube")
 @RequiredArgsConstructor
 public class CubeController {
 
-    private static final String DEFAULT_COUNT = "defaultCount";
-    private static final String ADDITIONAL_COUNT = "additionalCount";
-    private static final String GRADE = "grade";
-    private static final String ADDITIONAL_GRADE = "additionalGrade";
-
     private final CubeService cubeService;
     private final CubeStatisticsService cubeStatisticsService;
+    private final CubeSessionManager cubeSessionManager;
 
-    @GetMapping("/cube")
+    @GetMapping
     public String showCubePage(Model model, HttpSession session) {
-        // 기본 큐브 등급 초기화
-        if (session.getAttribute(GRADE) == null) {
-            session.setAttribute(GRADE, Grade.RARE);
-        }
-        // 추가 큐브 등급 초기화
-        if (session.getAttribute(ADDITIONAL_GRADE) == null) {
-            session.setAttribute(ADDITIONAL_GRADE, Grade.RARE);
+        // 초기화
+        if (session.getAttribute(DEFAULT_GRADE) == null) {
+            cubeSessionManager.initializeSession(session);
         }
 
-        model.addAttribute(GRADE, session.getAttribute(GRADE));
+        model.addAttribute(DEFAULT_GRADE, session.getAttribute(DEFAULT_COUNT));
         model.addAttribute(ADDITIONAL_GRADE, session.getAttribute(ADDITIONAL_GRADE));
 
         return "cube";
     }
 
-    @GetMapping("/cube/use")
+    @GetMapping("/use")
     @ResponseBody
     public CubeDto useDefaultCube(HttpSession session) {
-        Grade currentGrade = (Grade) session.getAttribute(GRADE);
-        Integer count = (Integer) session.getAttribute(DEFAULT_COUNT);
-        if (currentGrade == null) currentGrade = Grade.RARE;
-        if (count == null) count = 0;
+        PotentialDto state = cubeSessionManager.getPotentialFromSession(session, CubeType.DEFAULT);
+        Potential potential = cubeService.useCube(state);
+        CubeStatistics statistics = cubeStatisticsService.updateStatistics(CubeType.DEFAULT, state. getGrade());
 
-        Potential potential = cubeService.useCube(currentGrade, CubeType.DEFAULT, count);
-        CubeStatistics statistics = cubeStatisticsService.updateStatistics(CubeType.DEFAULT, currentGrade);
-
-        session.setAttribute(GRADE, potential.getGrade());
-        session.setAttribute(DEFAULT_COUNT, potential.getCount());
+        cubeSessionManager.updateSession(session, potential);
 
         return new CubeDto(potential, statistics);
     }
 
-    @GetMapping("/cube/use/additional")
+    @GetMapping("/use/additional")
     @ResponseBody
     public CubeDto useAdditionalCube(HttpSession session) {
-        Grade currentGrade = (Grade) session.getAttribute(ADDITIONAL_GRADE);
-        Integer count = (Integer) session.getAttribute(ADDITIONAL_COUNT);
-        if (currentGrade == null) currentGrade = Grade.RARE;
-        if (count == null) count = 0;
+        PotentialDto state = cubeSessionManager.getPotentialFromSession(session, CubeType.ADDITIONAL);
+        Potential potential = cubeService.useCube(state);
+        CubeStatistics statistics = cubeStatisticsService.updateStatistics(CubeType.ADDITIONAL, state. getGrade());
 
-        Potential potential = cubeService.useCube(currentGrade, CubeType.ADDITIONAL, count);
-        CubeStatistics statistics = cubeStatisticsService.updateStatistics(CubeType.ADDITIONAL, currentGrade);
-
-        session.setAttribute(ADDITIONAL_GRADE, potential.getGrade());
-        session.setAttribute(ADDITIONAL_COUNT, potential.getCount());
+        cubeSessionManager.updateSession(session, potential);
 
         return new CubeDto(potential, statistics);
     }
 
-    @GetMapping("/cube/reset")
+    @GetMapping("/reset")
     @ResponseBody
     public CubeDto resetCube(HttpSession session) {
-        session.setAttribute(GRADE, Grade.RARE);
-        session.setAttribute(ADDITIONAL_GRADE, Grade.RARE);
-        session.setAttribute(DEFAULT_COUNT, 0);
-        session.setAttribute(ADDITIONAL_COUNT, 0);
+        cubeSessionManager.initializeSession(session);
 
         return cubeService.reset();
     }

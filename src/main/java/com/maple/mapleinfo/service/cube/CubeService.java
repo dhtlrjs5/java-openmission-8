@@ -6,6 +6,7 @@ import com.maple.mapleinfo.domain.cube.CubeStatistics;
 import com.maple.mapleinfo.domain.cube.Option;
 import com.maple.mapleinfo.domain.cube.Potential;
 import com.maple.mapleinfo.dto.CubeDto;
+import com.maple.mapleinfo.dto.PotentialDto;
 import com.maple.mapleinfo.utils.CubeType;
 import com.maple.mapleinfo.utils.ErrorMessages;
 import com.maple.mapleinfo.utils.Grade;
@@ -71,7 +72,11 @@ public class CubeService {
         }
     }
 
-    public Potential useCube(Grade grade, CubeType type, Integer count) {
+    public Potential useCube(PotentialDto potentialDto) {
+
+        Grade grade = potentialDto.getGrade();
+        CubeType type = potentialDto.getType();
+        Integer count = potentialDto.getCount();
 
         List<Option> options = new ArrayList<>();
 

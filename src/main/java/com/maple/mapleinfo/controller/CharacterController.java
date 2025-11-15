@@ -22,6 +22,7 @@ public class CharacterController {
     public String getCharacter(@RequestParam String name, Model model) {
         CharacterBasicInfoDto info = characterService.getCharacterBasicInfo(name);
         model.addAttribute("info", info);
+
         return "characterBasicInfo";
     }
 }
