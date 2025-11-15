@@ -1,47 +1,33 @@
 package com.maple.mapleinfo.domain.wonder_berry;
 
-import lombok.Getter;
-
 import java.util.List;
-import java.util.Random;
 
-import static com.maple.mapleinfo.utils.ErrorMessages.ERROR_INVALID_PROBABILITY_SUM;
-
-@Getter
 public class WonderBerry {
 
-    private final List<Item> items;
-    private final WonderStatistics statistics;
-    private final Random random = new Random();
+    private static final Long WONDER_BERRY_COST = 5500L;
+    private static final int USE_TEN_TIMES = 10;
+
+    private final WonderBerryItems items;
+    private final WonderStatistics statistics = new WonderStatistics();
 
     public WonderBerry(List<Item> items) {
-        this.items = items;
-        statistics = new WonderStatistics();
+        this.items = new WonderBerryItems(items);
     }
 
     public WonderResult useWonderBerry() {
 
-        double randomValue = random.nextDouble() * 100;
-        double cumulative = 0L;
+        Item randomItem = items.findItemByRandomValue();
 
-        for (Item item : items) {
-            cumulative += item.getProbability();
+        statistics.addCount();
+        statistics.addCost(WONDER_BERRY_COST);
+        statistics.addItem(randomItem.getName());
 
-            if (randomValue <= cumulative) {
-                statistics.addCount();
-                statistics.addCost(5500L);
-                statistics.addItem(item.getName());
-
-                return new WonderResult(item, statistics);
-            }
-        }
-
-        throw new IllegalStateException(ERROR_INVALID_PROBABILITY_SUM);
+        return new WonderResult(randomItem, statistics);
     }
 
     public WonderResult useTenTimes() {
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < USE_TEN_TIMES; i++) {
             useWonderBerry();
         }
 

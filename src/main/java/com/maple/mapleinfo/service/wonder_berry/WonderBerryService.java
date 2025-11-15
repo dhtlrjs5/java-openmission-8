@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.domain.wonder_berry.Item;
 import com.maple.mapleinfo.domain.wonder_berry.WonderBerry;
 import com.maple.mapleinfo.domain.wonder_berry.WonderResult;
-import com.maple.mapleinfo.utils.ErrorMessages;
 import com.maple.mapleinfo.utils.Rarity;
 import org.springframework.stereotype.Service;
 
@@ -51,9 +50,12 @@ public class WonderBerryService {
     }
 
     private Item createItem(JsonNode node, Rarity rarity) {
+        JsonNode nameNode = node.get("name");
+        JsonNode probabilityNode = node.get("probability");
+
         return new Item(
-                node.get("name").asText(),
-                node.get("probability").asDouble(),
+                nameNode.asText(),
+                probabilityNode.asDouble(),
                 rarity
         );
     }

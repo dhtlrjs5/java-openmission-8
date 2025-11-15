@@ -1,12 +1,9 @@
 package com.maple.mapleinfo.controller;
 
-import com.maple.mapleinfo.domain.wonder_berry.WonderBerry;
 import com.maple.mapleinfo.domain.wonder_berry.WonderResult;
 import com.maple.mapleinfo.service.wonder_berry.WonderBerryService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
