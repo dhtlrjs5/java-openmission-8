@@ -1,38 +1,55 @@
 package com.maple.mapleinfo.domain.star_force;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
 public class Equipment {
 
-    Integer level;
-    Integer star;
-    Long price;
-    boolean destroyed;
+    EquipmentLevel level;
+    StarStatus status;
 
     public Equipment() {
-        level = 0;
-        star = 0;
-        price = 0L;
-        destroyed = false;
+        level = new EquipmentLevel();
+        status = new StarStatus();
     }
 
-    public void increaseStar() {
-        star++;
+    public Equipment increaseStar() {
+        StarStatus newStatus = status.increaseStar();
+
+        return new Equipment(level, newStatus);
     }
 
-    public void destroyedEquipment() {
-        star = 12;
-        destroyed = true;
+    public Equipment destroyed() {
+        StarStatus newStatus = status.destroyed();
+
+        return new Equipment(level, newStatus);
     }
 
-    public void repair() {
-        destroyed = false;
+    public Equipment repair() {
+        StarStatus newStatus = status.repair();
+
+        return new Equipment(level, newStatus);
     }
 
     public Equipment newPrice(Long price) {
-        return new Equipment(level, star, price, destroyed);
+        StarStatus newStatus = status.newPrice(price);
+
+        return new Equipment(level, newStatus);
+    }
+
+    public Integer getLevel() {
+        return level.getLevel();
+    }
+
+    public Long getPrice() {
+        return status.getPrice();
+    }
+
+    public Integer getStar() {
+        return status.getStar();
+    }
+
+    public boolean isDestroyed() {
+        return status.isDestroyed();
     }
 }

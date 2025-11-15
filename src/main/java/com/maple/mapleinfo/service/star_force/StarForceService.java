@@ -34,14 +34,12 @@ public class StarForceService {
         double randomValue = random.nextDouble() * PROBABILITY_SCALE;
 
         if (randomValue < probability.getSuccess()) {
-            equipment.increaseStar();
-            return equipment;
+            return equipment.increaseStar();
         }
 
         if (randomValue > PROBABILITY_SCALE - probability.getDestroy()) {
-            equipment.destroyedEquipment();
             statistics.addDestruction();
-            return equipment;
+            return equipment.destroyed();
         }
 
         return equipment;
@@ -66,10 +64,9 @@ public class StarForceService {
 
         Long price = equipment.getPrice();
 
-        equipment.repair();
         statistics.addCost(price);
 
-        return equipment;
+        return equipment.repair();
     }
 
     public StarStatistics reset() {
