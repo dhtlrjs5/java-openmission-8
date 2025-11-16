@@ -95,7 +95,7 @@
         });
 
         if (statistics) {
-            document.getElementById('stat-default-count').textContent = statistics.defaultCost;
+            document.getElementById('stat-default-count').textContent = statistics.defaultCount;
             document.getElementById('stat-additional-count').textContent = statistics.additionalCount;
             document.getElementById('stat-default-cost').textContent = statistics.defaultCost;
             document.getElementById('stat-additional-cost').textContent = statistics.additionalCost;
@@ -115,6 +115,7 @@
         const res = await fetch('/cube/reset');
         const data = await res.json();
         const potential = data.potential;
+        const statistics = data.statistics;
 
         // 등급 초기화
         document.getElementById('grade').textContent = potential.grade;
@@ -123,6 +124,15 @@
         // 천장 카운트 초기화
         document.getElementById('default-count').textContent = '(0 / 10)';
         document.getElementById('additional-count').textContent = '(0 / 31)';
+
+        // 통계 초기화
+        if (statistics) {
+            document.getElementById('stat-default-count').textContent = statistics.defaultCount;
+            document.getElementById('stat-additional-count').textContent = statistics.additionalCount;
+            document.getElementById('stat-default-cost').textContent = statistics.defaultCost;
+            document.getElementById('stat-additional-cost').textContent = statistics.additionalCost;
+            document.getElementById('stat-total-cost').textContent = statistics.totalCost;
+        }
 
         // 테이블 초기화
         ['default-table', 'additional-table'].forEach(id => {

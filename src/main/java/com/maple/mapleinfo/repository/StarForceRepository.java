@@ -34,6 +34,7 @@ public class StarForceRepository {
             if (stream == null) {
                 throw new FileNotFoundException(fileName + SUFFIX_NOT_FOUND);
             }
+
             return mapper.readTree(stream);
         } catch (IOException e) {
             throw new IllegalStateException(fileName + SUFFIX_FAIL_LOADING);
@@ -51,7 +52,7 @@ public class StarForceRepository {
         return getStarForceProbability(node);
     }
 
-    private static StarForceProbability getStarForceProbability(JsonNode node) {
+    private StarForceProbability getStarForceProbability(JsonNode node) {
         JsonNode successNode = node.path("success");
         JsonNode failNode = node.path("fail");
         JsonNode destroyNode = node.path("destroy");

@@ -19,7 +19,11 @@ public class CubeStatisticsService {
 
         statistics = statistics.update(cubeType, cost);
 
-        System.out.println(statistics.toString());
+        return statistics;
+    }
+
+    public CubeStatistics resetStatistics() {
+        statistics = new CubeStatistics();
 
         return statistics;
     }

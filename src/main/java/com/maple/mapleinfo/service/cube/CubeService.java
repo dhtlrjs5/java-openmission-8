@@ -1,28 +1,25 @@
 package com.maple.mapleinfo.service.cube;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maple.mapleinfo.domain.cube.CubeStatistics;
 import com.maple.mapleinfo.domain.cube.Option;
 import com.maple.mapleinfo.domain.cube.Potential;
 import com.maple.mapleinfo.dto.CubeDto;
 import com.maple.mapleinfo.dto.PotentialDto;
+import com.maple.mapleinfo.repository.CubeRepository;
 import com.maple.mapleinfo.utils.CubeType;
-import com.maple.mapleinfo.utils.ErrorMessages;
 import com.maple.mapleinfo.utils.Grade;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import static com.maple.mapleinfo.utils.ErrorMessages.*;
 
-@Slf4j
 @Service
+@RequiredArgsConstructor
 public class CubeService {
 
     private static final int RARE_TO_EPIC_DEFAULT_LIMIT = 10;
@@ -36,41 +33,8 @@ public class CubeService {
     private static final double PROBABILITY_SCALE = 100.0;
     private static final String DEFAULT_PROBABILITY_VALUE = "0%";
 
-    private static final String DEFAULT_FILE_NAME = "cube_weapon.json";
-    private static final String ADDITIONAL_FILE_NAME = "additional_cube_weapon.json";
-    private static final String DEFAULT_PATH = "/data/" + DEFAULT_FILE_NAME;
-    private static final String ADDITIONAL_PATH = "/data/" + ADDITIONAL_FILE_NAME;
-
-    private static final String ERROR_DEFAULT_FILE_NOT_FOUND = DEFAULT_FILE_NAME + SUFFIX_NOT_FOUND;
-    private static final String ERROR_DEFAULT_FILE_FAIL_LOADING = DEFAULT_FILE_NAME + SUFFIX_FAIL_LOADING;
-    private static final String ERROR_ADDITIONAL_FILE_NOT_FOUND = ADDITIONAL_FILE_NAME + SUFFIX_NOT_FOUND;
-    private static final String ERROR_ADDITIONAL_FILE_FAIL_LOADING = ADDITIONAL_FILE_NAME + SUFFIX_FAIL_LOADING;
-
-    private final JsonNode defaultRoot;
-    private final JsonNode additionalRoot;
     private final Random random = new Random();
-
-    public CubeService() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        try (InputStream inputStream = getClass().getResourceAsStream(DEFAULT_PATH)) {
-            if (inputStream == null) {
-                throw new FileNotFoundException(ERROR_DEFAULT_FILE_NOT_FOUND);
-            }
-            defaultRoot = mapper.readTree(inputStream);
-        } catch (Exception e) {
-            throw new IllegalStateException(ERROR_DEFAULT_FILE_FAIL_LOADING);
-        }
-
-        try (InputStream inputStream = getClass().getResourceAsStream(ADDITIONAL_PATH)) {
-            if (inputStream == null) {
-                throw new FileNotFoundException(ERROR_ADDITIONAL_FILE_NOT_FOUND);
-            }
-            additionalRoot = mapper.readTree(inputStream);
-        } catch (Exception e) {
-            throw new IllegalStateException(ERROR_ADDITIONAL_FILE_FAIL_LOADING);
-        }
-    }
+    private final CubeRepository repository;
 
     public Potential useCube(PotentialDto potentialDto) {
 
@@ -80,22 +44,17 @@ public class CubeService {
 
         List<Option> options = new ArrayList<>();
 
-        JsonNode cube = defaultRoot.path("cube");
-
-        if (type.equals(CubeType.ADDITIONAL)) {
-            cube = additionalRoot.path("cube");
-        }
-
         Potential initPotential = new Potential(grade, options, count, type);
-        return rollCube(initPotential, cube);
+        return rollCube(initPotential);
     }
 
-    private Potential rollCube(Potential potential, JsonNode cube) {
+    private Potential rollCube(Potential potential) {
         Grade grade = potential.getGrade();
-        List<Option> options = potential.getOptions();
         Integer count = potential.getCount();
         CubeType type = potential.getType();
 
+        JsonNode gradeNode = repository.findOptionGradeNode(type, grade);
+        JsonNode upgradeNode = repository.findUpgradeProbabilityNode(type, grade);
         Grade newGrade = applyDefaultLimitSystem(grade, count);
 
         if (type.equals(CubeType.ADDITIONAL)) {
@@ -103,17 +62,17 @@ public class CubeService {
         }
 
         if (newGrade != grade) {
-            rollOption(newGrade, options, cube);
+            List<Option> options = rollOption(gradeNode);
             return new Potential(newGrade, options, RESET_COUNT, type);
         }
 
-        newGrade = upgrade(grade, cube);
+        newGrade = upgrade(grade, upgradeNode);
         if (newGrade != grade) {
-            rollOption(newGrade, options, cube);
+            List<Option> options = rollOption(gradeNode);
             return new Potential(newGrade, options, RESET_COUNT, type);
         }
 
-        rollOption(newGrade, options, cube);
+        List<Option> options = rollOption(gradeNode);
         return new Potential(grade, options, count + 1, type);
     }
 
@@ -123,16 +82,9 @@ public class CubeService {
             return grade;
         }
 
-        JsonNode upgrade = cube.path("upgrade");
-        JsonNode probability = upgrade.path(grade.name());
-
-        if (probability.isMissingNode() || probability.isNull()) {
-            return grade;
-        }
-
         double randomValue = random.nextDouble() * PROBABILITY_SCALE;
 
-        if (randomValue <= probability.asDouble()) {
+        if (randomValue <= cube.asDouble()) {
             grade = grade.next();
         }
 
@@ -169,11 +121,8 @@ public class CubeService {
         return grade;
     }
 
-    private void rollOption(Grade grade, List<Option> options, JsonNode cube) {
-        JsonNode gradeNode = loadGradeNode(grade, cube);
-        if (gradeNode == null) {
-            throw new IllegalArgumentException(ERROR_WRONG_DATA);
-        }
+    private List<Option> rollOption(JsonNode gradeNode) {
+        List<Option> rollOptions = new ArrayList<>();
 
         JsonNode firstNode = gradeNode.path("first");
         JsonNode secondNode = gradeNode.path("second");
@@ -183,26 +132,11 @@ public class CubeService {
         Option second = rollSecondOption(secondNode);
         Option third = rollThirdOption(thirdNode);
 
-        options.add(first);
-        options.add(second);
-        options.add(third);
-    }
+        rollOptions.add(first);
+        rollOptions.add(second);
+        rollOptions.add(third);
 
-    private JsonNode loadGradeNode(Grade grade, JsonNode cube) {
-
-        if (grade == null) {
-            return null;
-        }
-
-        JsonNode weaponNode = cube.path("weapon");
-
-        JsonNode gradeNode = weaponNode.path(grade.name());
-
-        if (gradeNode.isMissingNode() || gradeNode.isNull()) {
-            return null;
-        }
-
-        return gradeNode;
+        return rollOptions;
     }
 
     private Option rollFirstOption(JsonNode node) {
@@ -219,7 +153,7 @@ public class CubeService {
 
     private Option getRandomOption(JsonNode optionsNode) {
         if (optionsNode.isMissingNode() || optionsNode.isNull()) {
-            throw new IllegalStateException(ERROR_WRONG_DATA);
+            throw new IllegalStateException(ERROR_NOT_FOUND_DATA);
         }
 
         double totalProbability = 0.0;
@@ -233,7 +167,7 @@ public class CubeService {
         for (JsonNode node : optionsNode) {
             cumulativeProbability += node.path("probability").asDouble();
             if (randomValue <= cumulativeProbability) {
-                String name = node.path("option").asText(ERROR_WRONG_DATA);
+                String name = node.path("option").asText(ERROR_NOT_FOUND_DATA);
                 String probability = node.path("probability").asText(DEFAULT_PROBABILITY_VALUE);
                 return new Option(name, probability + "%");
             }
@@ -241,15 +175,12 @@ public class CubeService {
 
         JsonNode fallback = optionsNode.get(0);
         return new Option(
-                fallback.path("option").asText(ERROR_WRONG_DATA),
+                fallback.path("option").asText(ERROR_NOT_FOUND_DATA),
                 fallback.path("probability").asText(DEFAULT_PROBABILITY_VALUE) + "%"
         );
     }
 
-    public CubeDto reset() {
-        Potential potential = new Potential(Grade.RARE, new ArrayList<>(), 0, CubeType.DEFAULT);
-        CubeStatistics statistics = new CubeStatistics();
-
-        return new CubeDto(potential, statistics);
+    public Potential reset() {
+        return new Potential(Grade.RARE, new ArrayList<>(), 0, CubeType.DEFAULT);
     }
 }

@@ -34,7 +34,7 @@ public class CubeController {
             cubeSessionManager.initializeSession(session);
         }
 
-        model.addAttribute(DEFAULT_GRADE, session.getAttribute(DEFAULT_COUNT));
+        model.addAttribute(DEFAULT_GRADE, session.getAttribute(DEFAULT_GRADE));
         model.addAttribute(ADDITIONAL_GRADE, session.getAttribute(ADDITIONAL_GRADE));
 
         return "cube";
@@ -69,6 +69,9 @@ public class CubeController {
     public CubeDto resetCube(HttpSession session) {
         cubeSessionManager.initializeSession(session);
 
-        return cubeService.reset();
+        CubeStatistics resetStatistics = cubeStatisticsService.resetStatistics();
+        Potential resetPotential = cubeService.reset();
+
+        return new CubeDto(resetPotential, resetStatistics);
     }
 }
