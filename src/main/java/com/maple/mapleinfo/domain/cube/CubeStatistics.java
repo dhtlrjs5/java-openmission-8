@@ -1,37 +1,52 @@
 package com.maple.mapleinfo.domain.cube;
 
+import com.maple.mapleinfo.utils.CubeType;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
 public class CubeStatistics {
 
-    private Long defaultCount = 0L;
-    private Long additionalCount = 0L;
-    private Long defaultCost = 0L;
-    private Long additionalCost = 0L;
-    private Long totalCost = 0L;
+    private CubeTypeStatistics defaultStatistics;
+    private CubeTypeStatistics additionalStatistics;
 
-    public void increaseDefaultCount() {
-        ++defaultCount;
+    public CubeStatistics() {
+        defaultStatistics = new CubeTypeStatistics();
+        additionalStatistics = new CubeTypeStatistics();
     }
 
-    public void increaseAdditionalCount() {
-        ++additionalCount;
+    public CubeStatistics update(CubeType type, Long cost) {
+        if (type == CubeType.DEFAULT) {
+            CubeTypeStatistics newStatistics = defaultStatistics.update(cost);
+
+            return new CubeStatistics(newStatistics, additionalStatistics);
+        }
+
+        CubeTypeStatistics newStatistics = additionalStatistics.update(cost);
+
+        return new CubeStatistics(defaultStatistics, newStatistics);
     }
 
-    public void addDefaultCost(Long cost) {
-        defaultCost += cost;
+    public Long getDefaultCount() {
+        return defaultStatistics.getCount();
     }
 
-    public void addAdditionalCost(Long cost) {
-        additionalCost += cost;
+    public Long getDefaultCost() {
+        return defaultStatistics.getCost();
     }
 
-    public void addTotalCost(Long cost) {
-        totalCost += cost;
+    public Long getAdditionalCount() {
+        return additionalStatistics.getCount();
+    }
+
+
+    public Long getAdditionalCost() {
+        return additionalStatistics.getCost();
+    }
+
+    public Long getTotalCost() {
+        Long defaultCost = defaultStatistics.getCost();
+        Long additionalCost = additionalStatistics.getCost();
+
+        return defaultCost + additionalCost;
     }
 }

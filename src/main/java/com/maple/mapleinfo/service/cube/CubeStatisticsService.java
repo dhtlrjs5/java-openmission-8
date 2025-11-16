@@ -8,27 +8,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class CubeStatisticsService {
 
-    private final CubeStatistics statistics = new CubeStatistics();
+    private CubeStatistics statistics = new CubeStatistics();
 
     public CubeStatistics updateStatistics(CubeType cubeType, Grade grade) {
-
         String key = cubeType + "_" + grade;
-        Long cost = CubeCost.valueOf(key).getCost();
+        CubeCost cubeCost = CubeCost.valueOf(key);
+        Long cost = cubeCost.getCost();
 
-        if (cubeType.equals(CubeType.DEFAULT)) {
-            statistics.increaseDefaultCount();
-            statistics.addDefaultCost(cost);
-            statistics.addTotalCost(cost);
+        statistics = statistics.update(cubeType, cost);
 
-            return statistics;
-        }
-
-        statistics.increaseAdditionalCount();
-        statistics.addAdditionalCost(cost);
-        statistics.addTotalCost(cost);
+        System.out.println(statistics.toString());
 
         return statistics;
     }
