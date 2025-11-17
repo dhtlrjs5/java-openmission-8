@@ -1,7 +1,10 @@
 package com.maple.mapleinfo.service.cube;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.maple.mapleinfo.domain.cube.Option;
 import com.maple.mapleinfo.domain.cube.Potential;
 import com.maple.mapleinfo.dto.PotentialDto;
+import com.maple.mapleinfo.repository.CubeRepository;
 import com.maple.mapleinfo.utils.CubeType;
 import com.maple.mapleinfo.utils.Grade;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,11 +34,43 @@ class CubeServiceTest {
     @Mock
     private Random random;
 
+    @Mock
+    private CubeRepository repository;
+
+    @Mock
+    private CubeRoller roller;
+
+    private final List<Option> mockOptions = createMockOptions();
+
     @BeforeEach
     void setUp() throws Exception {
         Field randomField = CubeService.class.getDeclaredField("random");
         randomField.setAccessible(true);
         randomField.set(cubeService, random);
+
+        // 💡 1. Roller Mocking: 모든 옵션 롤링 호출에 대해 Mock 리스트를 반환합니다.
+        when(roller.rollOption(any(JsonNode.class))).thenReturn(mockOptions);
+
+        // 💡 2. Repository Mocking: findOptionGradeNode 호출 Mocking (NPE 방지)
+        when(repository.findOptionGradeNode(any(CubeType.class), any(Grade.class)))
+                .thenReturn(mock(JsonNode.class));
+
+        // 💡 3. Upgrade Node Mocking: RARE -> EPIC (기본 15.0% 가정)
+        // 등급 유지/확률 승급 테스트를 위해 기본 확률을 Mocking합니다.
+        JsonNode upgradeNodeMock = mock(JsonNode.class);
+        when(upgradeNodeMock.asDouble()).thenReturn(15.0); // RARE -> EPIC 확률 15%
+        when(repository.findUpgradeProbabilityNode(any(CubeType.class), any(Grade.class)))
+                .thenReturn(upgradeNodeMock);
+    }
+
+    private List<Option> createMockOptions() {
+        List<Option> options = new ArrayList<>();
+
+        options.add(new Option("Mock Option 1", "1%"));
+        options.add(new Option("Mock Option 2", "1%"));
+        options.add(new Option("Mock Option 3", "1%"));
+
+        return options;
     }
 
     @Test
@@ -109,7 +148,7 @@ class CubeServiceTest {
         // given
         int initialCount = 30;
         Grade initialGrade = Grade.RARE;
-        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.ADDITIONAL);
 
         // when
         Potential potentialAfterLimit = cubeService.useCube(potentialDto);
@@ -125,7 +164,7 @@ class CubeServiceTest {
         // given
         int initialCount = 75;
         Grade initialGrade = Grade.EPIC;
-        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.ADDITIONAL);
 
         // when
         Potential potentialAfterLimit = cubeService.useCube(potentialDto);
@@ -141,7 +180,7 @@ class CubeServiceTest {
         // given
         int initialCount = 213;
         Grade initialGrade = Grade.UNIQUE;
-        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.DEFAULT);
+        PotentialDto potentialDto = new PotentialDto(initialGrade, initialCount, CubeType.ADDITIONAL);
 
         // when
         Potential potentialAfterLimit = cubeService.useCube(potentialDto);
