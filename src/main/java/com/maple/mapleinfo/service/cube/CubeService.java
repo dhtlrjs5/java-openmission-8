@@ -38,31 +38,34 @@ public class CubeService {
 
     private Potential rollCube(Potential potential) {
         Grade grade = potential.getGrade();
-        Integer count = potential.getCount();
         CubeType type = potential.getType();
 
-        Potential newPotential = potential.upgradePotential();
-        Grade newGrade = newPotential.getGrade();
+        Potential upgradePotential = potential.upgradePotential();
+        Grade newGrade = upgradePotential.getGrade();
+        Integer newCount = upgradePotential.getCount();
 
-        List<Option> options = getOption(grade, newGrade, type);
-
-        return new Potential(grade, options, count + 1, type);
+        return roll(grade, newGrade, type, newCount);
     }
 
-    private List<Option> getOption(Grade grade, Grade newGrade, CubeType type) {
+    private Potential roll(Grade grade, Grade newGrade, CubeType type, Integer count) {
         JsonNode gradeNode = repository.findOptionGradeNode(type, grade);
         JsonNode upgradeNode = repository.findUpgradeProbabilityNode(type, grade);
 
         if (newGrade != grade) {
-            return roller.rollOption(gradeNode);
+            gradeNode = repository.findOptionGradeNode(type, newGrade);
+            List<Option> options = roller.rollOption(gradeNode);
+            return new Potential(newGrade, options, 0, type);
         }
 
         newGrade = upgrade(grade, upgradeNode);
         if (newGrade != grade) {
-            return roller.rollOption(gradeNode);
+            gradeNode = repository.findOptionGradeNode(type, newGrade);
+            List<Option> options = roller.rollOption(gradeNode);
+            return new Potential(newGrade, options, 0, type);
         }
 
-        return roller.rollOption(gradeNode);
+        List<Option> options = roller.rollOption(gradeNode);
+        return new Potential(grade, options, count + 1, type);
     }
 
     private Grade upgrade(Grade grade, JsonNode cube) {
