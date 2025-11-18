@@ -63,6 +63,7 @@ class StarForceServiceTest {
         // when
         StarForceDto enhanced = service.enhance(equipment, stats);
         Equipment result = enhanced.getEquipment();
+        stats = enhanced.getStatistics();
 
         // then
         assertThat(result.getStar()).isEqualTo(star + 1);
@@ -99,6 +100,7 @@ class StarForceServiceTest {
         // when
         StarForceDto enhanced = service.enhance(equipment, stats);
         Equipment result = enhanced.getEquipment();
+        stats = enhanced.getStatistics();
 
         // then
         assertThat(result.getStar()).isEqualTo(star);
@@ -114,7 +116,6 @@ class StarForceServiceTest {
         int star = 15;
         long cost = 139_289_100L;
         double destroyRate = 2.1;
-        double destroyThreshold = (100.0 - destroyRate) / 100.0; // 0.979
 
         StarStatus status = new StarStatus(star, 1_000_000L, false);
         Equipment equipment = new Equipment(level, status);
@@ -129,6 +130,7 @@ class StarForceServiceTest {
         // when
         StarForceDto enhanced = service.enhance(equipment, stats);
         Equipment result = enhanced.getEquipment();
+        stats = enhanced.getStatistics();
 
         // then
         assertThat(result.getStar()).isEqualTo(12);
