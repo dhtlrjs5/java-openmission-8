@@ -5,82 +5,247 @@
     <title>위습의 원더베리 시뮬레이션</title>
     <link rel="stylesheet" th:href="@{/css/common.css}">
     <style>
-        .item-box { border-radius: 10px; padding: 15px; margin: 20px auto; width: 400px; }
-        .rare-box { border: 2px solid gold; color: goldenrod; font-weight: bold; }
-        .normal-box { border: 1px solid #ccc; }
-        ul { list-style: none; padding: 0; }
-        .result-box { margin: 30px auto; font-size: 1.1rem; font-weight: bold; }
+        /* CSS는 기존 common.css를 사용하고, 레이아웃은 inline style로 조정 */
+        .stats-header, .item-counts-box { border: 1px solid #ccc; border-radius: 8px; }
+        .stats-header { background-color: #f8f8f8; }
+        .item-counts-box { background-color: white; }
     </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/header :: header}"></div>
 
+<div id="draw-effect-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+
+    <img id="effect-stage1-gif" th:src="@{/pet/using.gif}" style="width: 700px; height: 700px; position: absolute;">
+
+    <div id="effect-stage2-reveal" style="display: none; text-align: center;">
+
+        <img th:src="@{/pet/result.gif}" alt="Reveal Frame" style="width: 700px; height: 700px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+
+        <img id="effect-item-image" src="" alt="Drawn Item Image" style="width: 40px; height: 40px; position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%); border-radius: 10px;">
+
+        <p id="effect-item-name" style="position: absolute; top: 70%; left: 50%; transform: translateX(-50%); color: white; font-size: 32px; font-weight: 900; text-shadow: 0 0 10px black;"></p>
+
+        <button id="close-effect-btn" style="position: absolute; top: 85%; left: 50%; transform: translateX(-50%); padding: 10px 30px; background-color: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 18px;">닫기</button>
+
+    </div>
+</div>
+
 <main style="text-align: center; margin-top: 40px;">
     <h2>🎲 위습의 원더베리 시뮬레이터</h2>
 
-    <!-- RARE 아이템 -->
-    <div class="item-box rare-box">
-        <h3>✨ RARE 아이템 ✨</h3>
-        <ul id="rare-list">
-            <li>크림</li>
-            <li>샤샤</li>
-            <li>팬디</li>
-        </ul>
+    <div class="stats-header" style="margin: 20px auto; padding: 15px; width: 600px; display: flex; justify-content: space-around;">
+        <div style="font-size: 1.1rem; font-weight: bold;">사용개수: <span id="stat-count">0</span>개</div>
+        <div style="font-size: 1.1rem; font-weight: bold; color: #4CAF50;">누적금액: <span id="stat-cost">0</span>원</div>
     </div>
 
-    <!-- NORMAL 아이템 -->
-    <div class="item-box normal-box">
-        <h3>일반 아이템</h3>
-        <ul id="normal-list">
-            <li>식빵이</li>
-            <li>빵둘기</li>
-            <li>제키</li>
-            <li>제나</li>
-            <li>제리</li>
-            <li>고농축 프리미엄 생명의 물</li>
-            <li>오가닉 원더 쿠키</li>
-        </ul>
+    <div class="item-counts-box" style="margin: 20px auto; padding: 20px; width: 600px; text-align: left;">
+
+        <h3 style="margin-top: 0; text-align: center;">아이템 획득 통계</h3>
+
+        <div style="display: flex; justify-content: space-around; margin-bottom: 10px; text-align: center;">
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/크림.gif}" alt="크림 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div style="font-weight: bold; color: #DAA520;">크림: <span id="item-크림">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/샤샤.gif}" alt="샤샤 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div style="font-weight: bold; color: #DAA520;">샤샤: <span id="item-샤샤">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/팬디.gif}" alt="팬디 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div style="font-weight: bold; color: #DAA520;">팬디: <span id="item-팬디">0</span>회</div>
+            </div>
+        </div>
+
+        <hr style="border-top: 1px dashed #eee;">
+
+        <div style="display: flex; justify-content: space-around; margin-bottom: 10px; text-align: center;">
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/고농축프리미엄생명의물.gif}" alt="생명의 물 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>고농축 프리미엄 생명의 물: <span id="item-고농축프리미엄생명의물">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/오가닉원더쿠키.gif}" alt="원더 쿠키 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>오가닉 원더 쿠키: <span id="item-오가닉원더쿠키">0</span>회</div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/식빵이.gif}" alt="식빵이 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>식빵이: <span id="item-식빵이">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/빵둘기.gif}" alt="빵둘기 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>빵둘기: <span id="item-빵둘기">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/제키.gif}" alt="제키 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>제키: <span id="item-제키">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/제나.gif}" alt="제나 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>제나: <span id="item-제나">0</span>회</div>
+            </div>
+            <div class="item-stat-wrapper">
+                <img th:src="@{/pet/제리.gif}" alt="제리 아이콘" style="width: 32px; height: 32px; display: block; margin: 0 auto 5px auto;">
+                <div>제리: <span id="item-제리">0</span>회</div>
+            </div>
+        </div>
     </div>
 
-    <!-- 결과 표시 -->
-    <div id="result-box" class="result-box">
-        🎁 뽑은 아이템: <span id="result-item">-</span>
+    <div id="result-box" class="result-box" style="margin-top: 30px;">
+        🎁 뽑은 아이템: <span id="result-item" style="font-weight: bold; color: #3498db;">-</span>
     </div>
 
-    <!-- 버튼 -->
     <div style="margin-top: 30px;">
-        <button id="default-btn" class="cube-btn">1회 사용</button>
+        <button id="use-btn" class="cube-btn">1회 사용</button>
+        <button id="use10-btn" class="cube-btn">10회 사용</button>
+        <button id="reset-btn" class="cube-btn" style="background-color: #ff6b6b;">초기화</button>
     </div>
-
 </main>
 
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 <script>
-    async function updateStats(data) {
-        console.log(data)
-        document.getElementById("result-item").textContent = data.item ? data.item.name : "-";
+    // File: src/main/resources/templates/wonder.html (JavaScript)
+    const GIF_DURATION = 4000;
+
+    // 💡 희귀 아이템 목록 및 색상 정의
+    const RARE_ITEMS = ["크림", "샤샤", "팬디"];
+    const RARE_COLOR = "#DAA520"; // 골드 색상
+    const NORMAL_COLOR = "white"; // 일반 색상
+
+    /**
+     * 💡 뽑힌 아이템을 중앙에 표시하고 순차적인 이펙트를 적용합니다.
+     */
+    function showDrawEffect(item) {
+        if (!item || !item.name) return;
+
+        const modal = document.getElementById("draw-effect-modal");
+        const gif = document.getElementById("effect-stage1-gif");
+        const revealStage = document.getElementById("effect-stage2-reveal");
+        const itemNameElement = document.getElementById("effect-item-name");
+        const itemImageElement = document.getElementById("effect-item-image");
+
+        // 1. 아이템 이름과 이미지 경로 설정
+        itemNameElement.textContent = item.name;
+
+        // 💡 색상 동적 설정
+        if (RARE_ITEMS.includes(item.name)) {
+            itemNameElement.style.color = RARE_COLOR;
+        } else {
+            itemNameElement.style.color = NORMAL_COLOR;
+        }
+
+        // 🚨 이미지 경로 동적 생성: 아이템 이름(공백 제거)을 기반으로 경로를 생성합니다.
+        const cleanName = item.name.replace(/ /g, "");
+        const imagePath = "/pet/" + cleanName + ".gif";
+        itemImageElement.src = imagePath;
+
+        // 2. 초기 설정 및 모달 표시
+        revealStage.style.display = 'none';
+        gif.style.display = 'block';
+        modal.style.display = 'flex';
+
+        // 3. 타이머 1: GIF 재생 후 결과 이미지 표시
+        setTimeout(() => {
+            gif.style.display = 'none';
+            revealStage.style.display = 'block';
+        }, GIF_DURATION);
     }
 
-    document.getElementById("default-btn").addEventListener("click", async () => {
+    /**
+     * 통계 및 결과 화면을 업데이트하는 함수
+     */
+    function updateStatsView(data) {
+        const stats = data.statistics;
+        const resultItem = data.item;
+
+        // 1. 이펙트 출력 (1회 사용 시)
+        if (resultItem) {
+            showDrawEffect(resultItem);
+        }
+
+        // 2. Top Statistics Update
+        document.getElementById("stat-count").textContent = stats.count;
+        document.getElementById("stat-cost").textContent = stats.cost.toLocaleString('ko-KR');
+
+        // 3. Result Item Update
+        document.getElementById("result-item").textContent = resultItem ? resultItem.name : "-";
+
+        // 4. Individual Item Counts Update
+        for (const [name, count] of Object.entries(stats.itemCount)) {
+            const id = "item-" + name.replace(/ /g, "");
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = count;
+            }
+        }
+    }
+
+    /**
+     * 화면 통계를 0으로 초기화하는 함수
+     */
+    function resetView() {
+        document.getElementById("stat-count").textContent = 0;
+        document.getElementById("stat-cost").textContent = 0;
+        document.getElementById("result-item").textContent = "-";
+
+        const itemIds = [
+            "item-크림", "item-샤샤", "item-팬디",
+            "item-고농축프리미엄생명의물", "item-오가닉원더쿠키",
+            "item-식빵이", "item-빵둘기", "item-제키", "item-제나", "item-제리"
+        ];
+
+        itemIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = 0;
+            }
+        });
+    }
+
+    // --- Event Handlers ---
+
+    document.getElementById("use-btn").addEventListener("click", async () => {
         const res = await fetch("/wonder/use");
-        const data = await res.json();
-        await updateStats(data);
+        if (res.ok) {
+            const data = await res.json();
+            updateStatsView(data);
+        } else {
+            alert("1회 사용 중 오류 발생: " + res.status);
+        }
     });
 
     document.getElementById("use10-btn").addEventListener("click", async () => {
         const res = await fetch("/wonder/use10");
-        const data = await res.json();
-        updateStats(data);
+        if (res.ok) {
+            const data = await res.json();
+            updateStatsView(data);
+        } else {
+            alert("10회 사용 중 오류 발생: " + res.status);
+        }
     });
 
     document.getElementById("reset-btn").addEventListener("click", async () => {
         const res = await fetch("/wonder/reset");
-        const data = await res.json();
-        updateStats(data);
+        if (res.ok) {
+            const data = await res.json();
+            resetView();
+            updateStatsView(data);
+        } else {
+            alert("초기화 중 오류 발생: " + res.status);
+        }
     });
+
+    // 💡 닫기 버튼 핸들러 (새로 추가)
+    document.getElementById("close-effect-btn").addEventListener("click", () => {
+        document.getElementById("draw-effect-modal").style.display = 'none';
+    });
+
+    // 초기 로드 시 뷰를 0으로 설정
+    resetView();
 </script>
-
-<div th:replace="~{fragments/footer :: footer}"></div>
-
-</body>
-</html>

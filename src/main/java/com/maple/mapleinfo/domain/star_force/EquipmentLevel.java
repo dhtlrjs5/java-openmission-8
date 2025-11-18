@@ -7,9 +7,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public class EquipmentLevel {
 
+    private static final Integer TEMP_LEVEL = 250;
+
     Integer level;
 
     public EquipmentLevel() {
-        level = 250;
+        level = TEMP_LEVEL;
     }
 }

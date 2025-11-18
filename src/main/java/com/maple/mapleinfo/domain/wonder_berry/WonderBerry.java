@@ -4,7 +4,7 @@ import java.util.List;
 
 public class WonderBerry {
 
-    private static final Long WONDER_BERRY_COST = 5500L;
+    private static final Long WONDER_BERRY_COST = 5400L;
     private static final int USE_TEN_TIMES = 10;
 
     private final WonderBerryItems items;

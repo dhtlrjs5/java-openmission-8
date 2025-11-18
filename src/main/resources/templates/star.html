@@ -64,7 +64,7 @@
         }
 
         equipment.star = resultEquipment.star;
-        equipment.price = resultEquipment.price;
+        equipment.price = resultEquipment.price.toLocaleString('ko-KR');
         equipment.destroyed = resultEquipment.destroyed;
 
         updateStatistics(resultStatistics);
@@ -74,8 +74,8 @@
 
     const updateView = () => {
         document.getElementById("star-count").textContent = equipment.star;
-        document.getElementById("equipment-price").textContent = equipment.price;
-        document.getElementById("total-cost").textContent = window.starStatistics.totalCost;
+        document.getElementById("equipment-price").textContent = equipment.price.toLocaleString('ko-KR');
+        document.getElementById("total-cost").textContent = window.starStatistics.totalCost.toLocaleString('ko-KR');
         document.getElementById("attempts").textContent = window.starStatistics.attempts;
         document.getElementById("destruction").textContent = window.starStatistics.destruction;
 

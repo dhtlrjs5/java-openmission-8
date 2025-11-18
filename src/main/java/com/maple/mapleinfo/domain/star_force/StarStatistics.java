@@ -28,7 +28,6 @@ public class StarStatistics {
         return new StarStatistics(totalCost + cost, attempts + 1, destruction);
     }
 
-    // 리펙토링중
     public StarStatistics addDestruction() {
         return new StarStatistics(totalCost, attempts, destruction + 1);
     }

@@ -97,9 +97,9 @@
         if (statistics) {
             document.getElementById('stat-default-count').textContent = statistics.defaultCount;
             document.getElementById('stat-additional-count').textContent = statistics.additionalCount;
-            document.getElementById('stat-default-cost').textContent = statistics.defaultCost;
-            document.getElementById('stat-additional-cost').textContent = statistics.additionalCost;
-            document.getElementById('stat-total-cost').textContent = statistics.totalCost;
+            document.getElementById('stat-default-cost').textContent = statistics.defaultCost.toLocaleString('ko-KR');
+            document.getElementById('stat-additional-cost').textContent = statistics.additionalCost.toLocaleString('ko-KR');
+            document.getElementById('stat-total-cost').textContent = statistics.totalCost.toLocaleString('ko-KR');
         }
     }
 
