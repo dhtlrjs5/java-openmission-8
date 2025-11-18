@@ -243,23 +243,27 @@ main table tr:last-child td {
 
 /* 기본 큐브 버튼 */
 #default-btn,
-#enhance-btn {
+#enhance-btn,
+#use-btn {
     background-color: #6bb6ff; /* 연파랑 */
 }
 
 #default-btn:hover,
-#enhance-btn:hover {
+#enhance-btn:hover,
+#use-btn:hover {
     background-color: #4d9efc; /* hover 시 진한 파랑 */
 }
 
 /* 에디셔널 큐브 버튼 */
 #additional-btn,
-#repair-btn {
+#repair-btn,
+#use10-btn {
     background-color: #75d79e; /* 연초록 */
 }
 
 #additional-btn:hover,
-#repair-btn:hover {
+#repair-btn:hover,
+#use10-btn:hover {
     background-color: #52c57f; /* hover 시 진한 초록 */
 }
 
