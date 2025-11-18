@@ -2,6 +2,7 @@ package com.maple.mapleinfo.controller;
 
 import com.maple.mapleinfo.domain.star_force.Equipment;
 import com.maple.mapleinfo.domain.star_force.StarStatistics;
+import com.maple.mapleinfo.domain.star_force.StarStatus;
 import com.maple.mapleinfo.dto.StarForceDto;
 import com.maple.mapleinfo.service.star_force.StarForceService;
 import jakarta.servlet.http.HttpSession;
@@ -23,27 +24,41 @@ public class StarForceController {
 
     @PostMapping("/enhance")
     @ResponseBody
-    public StarForceDto enhance(@RequestBody Equipment equipment, HttpSession session) {
+    public StarForceDto enhance(HttpSession session) {
         StarStatistics statistics = getStatistics(session);
-        Equipment updatedEquipment = service.enhance(equipment, statistics);
+        Equipment equipment = getEquipment(session);
 
-        return new StarForceDto(statistics, updatedEquipment);
+        StarForceDto enhanced = service.enhance(equipment, statistics);
+        Equipment updatedEquipment = enhanced.getEquipment();
+        StarStatistics updatedStatistics = enhanced.getStatistics();
+
+        session.setAttribute("equipment", updatedEquipment);
+        session.setAttribute("starStatistics", updatedStatistics);
+
+        return new StarForceDto(updatedStatistics, updatedEquipment);
     }
 
     @PostMapping("/repair")
     @ResponseBody
-    public StarForceDto repair(@RequestBody Equipment equipment, HttpSession session) {
+    public StarForceDto repair(HttpSession session) {
         StarStatistics statistics = getStatistics(session);
-        Equipment repaired = service.repair(equipment, statistics);
+        Equipment equipment = getEquipment(session);
 
-        return new StarForceDto(statistics, repaired);
+        Equipment repaired = service.repair(equipment);
+        StarStatistics newStatistics = service.updateRepairStatistics(repaired, statistics);
+
+        session.setAttribute("equipment", repaired);
+        session.setAttribute("starStatistics", statistics);
+
+        return new StarForceDto(newStatistics, repaired);
     }
 
     @PostMapping("/set-price")
     @ResponseBody
-    public StarForceDto setPrice(@RequestBody Equipment equipment, HttpSession session) {
+    public StarForceDto setPrice(@RequestBody StarStatus status, HttpSession session) {
         StarStatistics statistics = getStatistics(session);
-        Long price = equipment.getPrice();
+        Equipment equipment = getEquipment(session);
+        Long price = status.getPrice();
 
         Equipment newEquipment = equipment.newPrice(price);
         session.setAttribute("equipment", newEquipment);
@@ -71,7 +86,18 @@ public class StarForceController {
             statistics = new StarStatistics();
             session.setAttribute("starStatistics", statistics);
         }
-
+        
         return statistics;
+    }
+
+    private Equipment getEquipment(HttpSession session) {
+        Equipment equipment = (Equipment) session.getAttribute("equipment");
+
+        if (equipment == null) {
+            equipment = new Equipment();
+            session.setAttribute("equipment", equipment);
+        }
+
+        return equipment;
     }
 }

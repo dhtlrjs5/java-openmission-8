@@ -10,6 +10,6 @@ public class EquipmentLevel {
     Integer level;
 
     public EquipmentLevel() {
-        level = 0;
+        level = 250;
     }
 }

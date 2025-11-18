@@ -1,6 +1,7 @@
 package com.maple.mapleinfo.service.star_force;
 
 import com.maple.mapleinfo.domain.star_force.*;
+import com.maple.mapleinfo.dto.StarForceDto;
 import com.maple.mapleinfo.repository.StarForceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,7 +61,8 @@ class StarForceServiceTest {
         when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
-        Equipment result = service.enhance(equipment, stats);
+        StarForceDto enhanced = service.enhance(equipment, stats);
+        Equipment result = enhanced.getEquipment();
 
         // then
         assertThat(result.getStar()).isEqualTo(star + 1);
@@ -95,7 +97,8 @@ class StarForceServiceTest {
         when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
-        Equipment result = service.enhance(equipment, stats);
+        StarForceDto enhanced = service.enhance(equipment, stats);
+        Equipment result = enhanced.getEquipment();
 
         // then
         assertThat(result.getStar()).isEqualTo(star);
@@ -124,7 +127,8 @@ class StarForceServiceTest {
         when(repository.findCost(star, 250)).thenReturn(cost);
 
         // when
-        Equipment result = service.enhance(equipment, stats);
+        StarForceDto enhanced = service.enhance(equipment, stats);
+        Equipment result = enhanced.getEquipment();
 
         // then
         assertThat(result.getStar()).isEqualTo(12);
@@ -144,11 +148,12 @@ class StarForceServiceTest {
         StarStatistics statistics = new StarStatistics();
 
         // when
-        Equipment repaired = service.repair(equipment, statistics);
+        Equipment repaired = service.repair(equipment);
+        StarStatistics newStatistics = service.updateRepairStatistics(repaired, statistics);
 
         // then
         assertThat(repaired.isDestroyed()).isFalse();
         assertThat(repaired.getStar()).isEqualTo(12);
-        assertThat(statistics.getTotalCost()).isEqualTo(1_000_000L);
+        assertThat(newStatistics.getTotalCost()).isEqualTo(1_000_000L);
     }
 }

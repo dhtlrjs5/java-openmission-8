@@ -1,25 +1,35 @@
 package com.maple.mapleinfo.domain.star_force;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class StarStatistics {
 
-    Long totalCost = 0L;
-    Long attempts = 0L;
-    Long destruction = 0L;
+    private static final Long INITIAL_VALUE = 0L;
 
-    public void addCost(Long cost) {
-        totalCost += cost;
+    private Long totalCost;
+    private Long attempts;
+    private Long destruction;
+
+    public StarStatistics() {
+        totalCost = INITIAL_VALUE;
+        attempts = INITIAL_VALUE;
+        destruction = INITIAL_VALUE;
     }
 
-    public void addAttempts() {
-        attempts++;
+    public StarStatistics addCost(Long cost) {
+        return new StarStatistics(totalCost + cost, attempts, destruction);
     }
 
-    public void addDestruction() {
-        destruction++;
+    public StarStatistics addAttempts(Long cost) {
+        return new StarStatistics(totalCost + cost, attempts + 1, destruction);
+    }
+
+    // 리펙토링중
+    public StarStatistics addDestruction() {
+        return new StarStatistics(totalCost, attempts, destruction + 1);
     }
 }

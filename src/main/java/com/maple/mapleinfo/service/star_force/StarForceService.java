@@ -3,6 +3,7 @@ package com.maple.mapleinfo.service.star_force;
 import com.maple.mapleinfo.domain.star_force.Equipment;
 import com.maple.mapleinfo.domain.star_force.StarForceProbability;
 import com.maple.mapleinfo.domain.star_force.StarStatistics;
+import com.maple.mapleinfo.dto.StarForceDto;
 import com.maple.mapleinfo.repository.StarForceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,17 @@ public class StarForceService {
     private final Random random = new Random();
     private final StarForceRepository repository;
 
-    public Equipment enhance(Equipment equipment, StarStatistics statistics) {
-
-        Integer star = updateStatistics(equipment, statistics);
+    public StarForceDto enhance(Equipment equipment, StarStatistics statistics) {
+        Integer star = equipment.getStar();
+        StarStatistics newStatistics = updateEnhancedStatistics(equipment, statistics);
         StarForceProbability probability = repository.findProbability(star);
 
-        return enhancementResult(equipment, statistics,  probability);
+        Equipment newEquipment = enhancementResult(equipment, newStatistics, probability);
+        if (newEquipment.isDestroyed() && !equipment.isDestroyed()) {
+            newStatistics =  newStatistics.addDestruction();
+        }
+
+        return new StarForceDto(newStatistics, newEquipment);
     }
 
     private Equipment enhancementResult(
@@ -45,28 +51,27 @@ public class StarForceService {
         return equipment;
     }
 
-    private Integer updateStatistics(Equipment equipment, StarStatistics statistics) {
+    private StarStatistics updateEnhancedStatistics(Equipment equipment, StarStatistics statistics) {
         Integer star = equipment.getStar();
         Integer level = equipment.getLevel();
         Long cost = repository.findCost(star, level);
 
-        statistics.addCost(cost);
-        statistics.addAttempts();
-
-        return star;
+        return statistics.addAttempts(cost);
     }
 
-    public Equipment repair(Equipment equipment, StarStatistics statistics) {
+    public Equipment repair(Equipment equipment) {
 
         if (!equipment.isDestroyed()) {
             return equipment;
         }
 
+        return equipment.repair();
+    }
+
+    public StarStatistics updateRepairStatistics(Equipment equipment, StarStatistics statistics) {
         Long price = equipment.getPrice();
 
-        statistics.addCost(price);
-
-        return equipment.repair();
+        return statistics.addCost(price);
     }
 
     public StarStatistics reset() {
