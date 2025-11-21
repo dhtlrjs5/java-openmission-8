@@ -8,6 +8,7 @@ import com.maple.mapleinfo.service.cube.CubeService;
 import com.maple.mapleinfo.service.cube.CubeSessionManager;
 import com.maple.mapleinfo.service.cube.CubeStatisticsService;
 import com.maple.mapleinfo.utils.CubeType;
+import com.maple.mapleinfo.utils.Grade;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,8 @@ public class CubeController {
         model.addAttribute(DEFAULT_GRADE, session.getAttribute(DEFAULT_GRADE));
         model.addAttribute(ADDITIONAL_GRADE, session.getAttribute(ADDITIONAL_GRADE));
 
+        getCubeStatistics(session);
+
         return "cube";
     }
 
@@ -45,11 +48,16 @@ public class CubeController {
     public CubeDto useDefaultCube(HttpSession session) {
         PotentialDto state = cubeSessionManager.getPotentialFromSession(session, CubeType.DEFAULT);
         Potential potential = cubeService.useCube(state);
-        CubeStatistics statistics = cubeStatisticsService.updateStatistics(CubeType.DEFAULT, state. getGrade());
+        Grade grade = state.getGrade();
+
+        CubeStatistics statistics = getCubeStatistics(session);
+        CubeStatistics updatedStatistics =
+                cubeStatisticsService.updateStatistics(statistics, CubeType.DEFAULT, grade);
 
         cubeSessionManager.updateSession(session, potential);
+        session.setAttribute("cubeStatistics", updatedStatistics);
 
-        return new CubeDto(potential, statistics);
+        return new CubeDto(potential, updatedStatistics);
     }
 
     @GetMapping("/use/additional")
@@ -57,11 +65,16 @@ public class CubeController {
     public CubeDto useAdditionalCube(HttpSession session) {
         PotentialDto state = cubeSessionManager.getPotentialFromSession(session, CubeType.ADDITIONAL);
         Potential potential = cubeService.useCube(state);
-        CubeStatistics statistics = cubeStatisticsService.updateStatistics(CubeType.ADDITIONAL, state. getGrade());
+        Grade grade = state.getGrade();
+
+        CubeStatistics statistics = getCubeStatistics(session);
+        CubeStatistics updatedStatistics =
+                cubeStatisticsService.updateStatistics(statistics, CubeType.ADDITIONAL, grade);
 
         cubeSessionManager.updateSession(session, potential);
+        session.setAttribute("cubeStatistics", updatedStatistics);
 
-        return new CubeDto(potential, statistics);
+        return new CubeDto(potential, updatedStatistics);
     }
 
     @GetMapping("/reset")
@@ -70,8 +83,19 @@ public class CubeController {
         cubeSessionManager.initializeSession(session);
 
         CubeStatistics resetStatistics = cubeStatisticsService.resetStatistics();
+        session.setAttribute("cubeStatistics", resetStatistics);
         Potential resetPotential = cubeService.reset();
 
         return new CubeDto(resetPotential, resetStatistics);
+    }
+
+    private CubeStatistics getCubeStatistics(HttpSession session) {
+        CubeStatistics statistics = (CubeStatistics) session.getAttribute("cubeStatistics");
+        if (statistics == null) {
+            statistics = new CubeStatistics();
+            session.setAttribute("cubeStatistics", statistics);
+        }
+
+        return statistics;
     }
 }

@@ -10,21 +10,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class CubeStatisticsService {
 
-    private CubeStatistics statistics = new CubeStatistics();
-
-    public CubeStatistics updateStatistics(CubeType cubeType, Grade grade) {
+    public CubeStatistics updateStatistics(CubeStatistics statistics, CubeType cubeType, Grade grade) {
         String key = cubeType + "_" + grade;
         CubeCost cubeCost = CubeCost.valueOf(key);
         Long cost = cubeCost.getCost();
 
-        statistics = statistics.update(cubeType, cost);
-
-        return statistics;
+        return statistics.update(cubeType, cost);
     }
 
     public CubeStatistics resetStatistics() {
-        statistics = new CubeStatistics();
-
-        return statistics;
+        return new CubeStatistics();
     }
 }
