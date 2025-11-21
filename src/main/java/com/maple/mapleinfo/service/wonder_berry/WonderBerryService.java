@@ -2,9 +2,7 @@ package com.maple.mapleinfo.service.wonder_berry;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maple.mapleinfo.domain.wonder_berry.Item;
-import com.maple.mapleinfo.domain.wonder_berry.WonderBerry;
-import com.maple.mapleinfo.domain.wonder_berry.WonderResult;
+import com.maple.mapleinfo.domain.wonder_berry.*;
 import com.maple.mapleinfo.utils.Rarity;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +16,20 @@ import static com.maple.mapleinfo.utils.ErrorMessages.*;
 @Service
 public class WonderBerryService {
 
+    private static final Long WONDER_BERRY_COST = 5400L;
+    private static final int USE_TEN_TIMES = 10;
+
     private static final String FILE_NAME = "wonder_berry.json";
     private static final String RESOURCE_PATH = "/data/" + FILE_NAME;
 
-    private final WonderBerry wonderBerry;
+    private final WonderBerryItems items;
 
     public WonderBerryService() {
 
         ObjectMapper mapper = new ObjectMapper();
-
         JsonNode root = loadJsonRoot(mapper);
-
-        List<Item> items = createItems(root);
-
-        this.wonderBerry = new WonderBerry(items);
+        List<Item> loadedItems = createItems(root);
+        items = new WonderBerryItems(loadedItems);
     }
 
     private List<Item> createItems(JsonNode root) {
@@ -75,15 +73,27 @@ public class WonderBerryService {
         return root;
     }
 
-    public WonderResult useBerry() {
-        return wonderBerry.useWonderBerry();
+    public WonderResult useBerry(WonderStatistics statistics) {
+        Item randomItem = items.findItemByRandomValue();
+
+        statistics.addCount();
+        statistics.addCost(WONDER_BERRY_COST);
+        statistics.addItem(randomItem.getName());
+
+        return new WonderResult(randomItem, statistics);
     }
 
-    public WonderResult useTenBerries() {
-        return wonderBerry.useTenTimes();
+    public WonderResult useTenBerries(WonderStatistics statistics) {
+        for (int i = 0; i < USE_TEN_TIMES; i++) {
+            useBerry(statistics);
+        }
+
+        return new WonderResult(null, statistics);
     }
 
-    public WonderResult reset() {
-        return wonderBerry.reset();
+    public WonderResult reset(WonderStatistics statistics) {
+        statistics.reset();
+
+        return new WonderResult(null, statistics);
     }
 }
